@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.Image;
@@ -93,7 +94,7 @@ public class Game extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_game);
-
+       // pilka = (ImageView) findViewById(R.id.ivBall);
         Button boisko = (Button) findViewById(R.id.boisko);
         boisko.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -130,10 +131,10 @@ public class Game extends AppCompatActivity {
 
         int height = displayMetrics.heightPixels;// - 60;
         int width = displayMetrics.widthPixels;
-        countY = round(height/14);
+        countY = round(height/13);
         countX = round(width/11);
         srodekX = countX/2 - 1;
-        for (int i = 1; i < 155; i++) { //countX*countY
+        for (int i = 1; i < 144; i++) { //countX*countY
             final ImageView iv = new ImageView(this);
             iv.setImageResource(R.drawable.pole);
             iv.setClickable(true);
@@ -212,6 +213,10 @@ public class Game extends AppCompatActivity {
                             if ((!game) && ((_destination == _lastDestination) || (_source == _lastDestination) || (_lastDestination == null)))
                             {
                                 rysujLinie(_source, _destination);
+                                pilka.setX(_destination.getLeft() + _destination.getWidth()/4);
+                                pilka.setY(_destination.getTop() + _destination.getHeight()/4);
+                                pilka.bringToFront();
+                                pilka.invalidate();
                                 _lastDestination = _destination;
                             }
                             else if ((_destination != _lastDestination) && (_source != _lastDestination))
@@ -273,7 +278,7 @@ public class Game extends AppCompatActivity {
 
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX + 10, countX);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX + 15, countX + 4); // szer ; dl
         //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(100, 100);
         fx = source.getX();
         fy = source.getY();
@@ -285,17 +290,17 @@ public class Game extends AppCompatActivity {
             if (fy == sy)
             {
                 linia.setRotation(90);
-                fx += countX/2;
-                sx += countX/2;
+                fx += countX/2 - 6;
+                sx += countX/2 - 6;
 
             }
             else if (fx == sx)
             {
                 linia.setRotation(0);
-//                fx += countX/2;
-                fy += countY/2 - 10;
-//               // sx += countX/2;
-                sy += countY/2 - 10 ;
+                fx -= 6;
+                fy += countY/2 - 18;
+                sx -= 6;
+                sy += countY/2 - 18;
             }
             else
             {
@@ -307,7 +312,7 @@ public class Game extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"Nieznany ruch", Toast.LENGTH_SHORT).show();
 
                 int skos = (int)sqrt(pow(countX, 2) + pow(countX, 2));
-                params = new FrameLayout.LayoutParams(10, skos);
+                params = new FrameLayout.LayoutParams(10, skos + 3);
                 fx += countX - 4;
                 sx += countX - 4;
                 fy += countX/2  - 20;
@@ -341,13 +346,15 @@ public class Game extends AppCompatActivity {
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX/2, countX/2);
 
-        int centerX = listViews.get(SRODEK).getWidth() / 3;
-        int centerY = listViews.get(SRODEK).getHeight() / 3;
+        int centerX = listViews.get(SRODEK).getWidth() / 4;
+        int centerY = listViews.get(SRODEK).getHeight() / 4;
         params.leftMargin = listViews.get(SRODEK).getLeft() + centerX;
         params.topMargin = listViews.get(SRODEK). getTop() + centerY;
-        ImageView pilka = new ImageView(this);
+        pilka = new ImageView(this);
         pilka.setAdjustViewBounds(true);
-        pilka.setImageResource(R.drawable.ball);
+        pilka.setImageResource(R.drawable.sball);
+        pilka.bringToFront();
+        pilka.setClickable(false);
         frameLayout.addView(pilka, params);
 
 
