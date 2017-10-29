@@ -85,16 +85,15 @@ public class Game extends AppCompatActivity {
     private float scale = 1f;
     boolean game = false;
 
-    float fx = 0;
-    float fy = 0;
-    float sx = 0;
-    float sy = 0;
-    
+//    float fx = 0;
+//    float fy = 0;
+//    float sx = 0;
+//    float sy = 0;
+//
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_game);
-       // pilka = (ImageView) findViewById(R.id.ivBall);
         Button boisko = (Button) findViewById(R.id.boisko);
         boisko.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -103,13 +102,6 @@ public class Game extends AppCompatActivity {
                 rysujBoisko();
             }
         });
-        //Button btn = (Button) findViewById(R.id.bWyczysc);
-        //btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                clickWyczysc();
-//            }
-//        });
 
         int c = 0;
         int r = 0;
@@ -121,11 +113,9 @@ public class Game extends AppCompatActivity {
             public void onGlobalLayout() {
                 rysujBoisko();
                 rysujPilke();
-                //rysujPilke(listViews.get(listViews.size()/2)); TODO
                 lay.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-        //lay.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
@@ -135,11 +125,8 @@ public class Game extends AppCompatActivity {
         countX = round(width/11);
         srodekX = countX/2 - 1;
         for (int i = 1; i < 144; i++) { //countX*countY
-            final ImageView iv = new ImageView(this);
-            iv.setImageResource(R.drawable.pole);
-            iv.setClickable(true);
-            iv.setId(i - 1);
-            iv.setAdjustViewBounds(true);
+            final Field pol = new Field(this);
+            pol.setId(i - 1);
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX, countX);
             params.leftMargin = left;
             params.topMargin = top;
@@ -149,78 +136,39 @@ public class Game extends AppCompatActivity {
 //            params.columnSpec = GridLayout.spec(c);
 //            params.rowSpec = GridLayout.spec(r);
 //            iv.setLayoutParams(params);
-            lay.addView(iv, params);
-            listViews.add(iv);
+            lay.addView(pol, params);
+            listViews.add(pol);
             if ((i % 11 == 0) && (i != 1)) {
                 top += countX;
                 left = 0;
             } else left += countX;
-////     TAKIE COS BYLO NA NECIE https://stackoverflow.com/questions/35318585/how-to-set-on-touch-listener-for-multiple-image-views
-////            imageView.setOnTouchListener(this);
-////            @Override
-////            public boolean onTouch(View v, MotionEvent event) {
-////                ImageView view = (ImageView) v;
-////                switch (view.getId()){
-////                    case R.id.car1: // example id
-////                        switch (event.getAction()) {
-////                            case MotionEvent.ACTION_DOWN:
-////                                break;
-////                            case MotionEvent.ACTION_MOVE:
-////                                break;
-////                            case MotionEvent.ACTION_UP:
-////                                break;
-////                            case MotionEvent.ACTION_CANCEL:
-////                                break;
-////                        }
-////                        break;
-////                    case R.id.car2: // example id
-////                        switch (event.getAction()) {
-////                            case MotionEvent.ACTION_DOWN:
-////                                break;
-////                            case MotionEvent.ACTION_MOVE:
-////                                break;
-////                            case MotionEvent.ACTION_UP:
-////                                break;
-////                            case MotionEvent.ACTION_CANCEL:
-////                                break;
-////                        }
-////                        break;
-////                }
-////                return true;
-////            }
-//
-            iv.setOnTouchListener(new View.OnTouchListener() { //1111111111111111111111111111111
+
+            pol.setOnTouchListener(new View.OnTouchListener() { //1111111111111111111111111111111
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     switch(motionEvent.getAction())
                     {
                         case MotionEvent.ACTION_DOWN:
-                            Log.d("DOWN","" + iv.getId());
-                            if (game)
-                                _destination = (ImageView) findViewById(iv.getId());
-                            else
-                            {
-                                _source = (ImageView) findViewById(iv.getId());
-                            }
-                            game = !game;
-//                            if (source != null)
-//                                Log.d("SOURCE","" + source.getId());
-//                            if (destination != null)
-//                                Log.d("DEST","" + destination.getId());
+                            Log.d("DOWN","" + pol.getId());
+                           // if (game)
+                                _destination = (ImageView) findViewById(pol.getId());
                             return true;
                         case MotionEvent.ACTION_UP:
-                            Log.d("UP","" + iv.getId());
-                            if ((!game) && ((_destination == _lastDestination) || (_source == _lastDestination) || (_lastDestination == null)))
+                            Log.d("UP","" + pol.getId());
+                            if (_source != _destination)
+                            //if ((!game) && ((_destination == _lastDestination) || (_source == _lastDestination) || (_lastDestination == null)))
                             {
-                                rysujLinie(_source, _destination);
-                                pilka.setX(_destination.getLeft() + _destination.getWidth()/4);
-                                pilka.setY(_destination.getTop() + _destination.getHeight()/4);
-                                pilka.bringToFront();
-                                pilka.invalidate();
-                                _lastDestination = _destination;
+                                if (rysujLinie(_source, _destination))
+                                {
+                                    pilka.setX(_destination.getLeft() + _destination.getWidth()/4);
+                                    pilka.setY(_destination.getTop() + _destination.getHeight()/4);
+                                    pilka.bringToFront();
+                                    pilka.invalidate();
+                                    _source = _destination;
+                                }
                             }
-                            else if ((_destination != _lastDestination) && (_source != _lastDestination))
-                                Toast.makeText(getApplicationContext(), "Nie wcisnieto ostatniej pozycji", Toast.LENGTH_SHORT).show();
+                            else
+                                Toast.makeText(getApplicationContext(), "Wcisnij pole swojego następnego ruchu.", Toast.LENGTH_SHORT).show();
 
                             return false;
                         default:
@@ -243,6 +191,7 @@ public class Game extends AppCompatActivity {
 //////                }
             });
         }
+        _source = listViews.get(71);
 
     }
 
@@ -261,100 +210,41 @@ public class Game extends AppCompatActivity {
         }
         else
             Toast.makeText(this, "Nie mozna wrocic bardziej", Toast.LENGTH_SHORT).show();
-
-//        for (int i=40; i<listLinie.size(); i++)
-//        {
-//            iv = listLinie.get(i);
-//            iv.setVisibility(View.GONE);
-//            //frameLayout.removeView(image);
-//        }
     }
 
-    public void rysujLinie(ImageView source, ImageView destination) // TODO poprawic wyswietlanie linii
+    public boolean rysujLinie(ImageView source, ImageView destination) // TODO poprawic wyswietlanie linii
     {
-        ImageView linia = new ImageView(this);
-
-        linia.setImageResource(R.drawable.linia);
-
+        Line line = new Line(this);
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
-
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX + 15, countX + 4); // szer ; dl
-        //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(100, 100);
-        fx = source.getX();
-        fy = source.getY();
-        sx = destination.getX();
-        sy = destination.getY();
-
-        if ((abs(fx-sx) <= countX) && (abs(fy-sy) <=countY) && ((fx - sx != 0) || (fy - sy != 0)))
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX + 15, _source.getWidth()); // szer ; dl
+        if (line.createLine(source, destination))
         {
-            if (fy == sy)
-            {
-                linia.setRotation(90);
-                fx += countX/2 - 6;
-                sx += countX/2 - 6;
-
-            }
-            else if (fx == sx)
-            {
-                linia.setRotation(0);
-                fx -= 6;
-                fy += countY/2 - 18;
-                sx -= 6;
-                sy += countY/2 - 18;
-            }
-            else
-            {
-                if (((fx > sx) && (fy < sy)) || ((fx < sx) && (fy > sy)) )
-                    linia.setRotation(45);
-                else if (((fx < sx) && (fy < sy)) || ((fx > sx) && (fy > sy)))
-                    linia.setRotation(135);
-                else
-                    Toast.makeText(getApplicationContext(),"Nieznany ruch", Toast.LENGTH_SHORT).show();
-
-                int skos = (int)sqrt(pow(countX, 2) + pow(countX, 2));
-                params = new FrameLayout.LayoutParams(10, skos + 3);
-                fx += countX - 4;
-                sx += countX - 4;
-                fy += countX/2  - 20;
-                sy += countX/2 - 20;
-
-                if (((fx > sx) && (fy > sy)) || ((fx < sx) && (fy > sy)))
-                {
-//                    fy += 8;
-//                    sy += 8;
-                }
-
-            }
-
-            params.leftMargin = ((int)fx < (int)sx) ? (int)fx : (int)sx;
-            params.topMargin = ((int)fy < (int)sy) ? (int)fy : (int)sy;
-            listLinie.add(linia);
-            lay.addView(linia, params);
-            //rysujPilke(destination);
+           // params.leftMargin = ((int) line.getFx() < (int) line.getSx()) ? (int) line.getFx() : (int) line.getSx();
+           // params.topMargin = ((int) line.getFy() < (int) line.getSy()) ? (int) line.getFy(): (int) line.getSy();
+            listLinie.add(line);
+            lay.addView(line, line.getParams());
             lay.invalidate();
+
+            Log.d("COORDS", "fx: " + line.getFx() + " fy: " + line.getFy() + " sx: " + line.getSx() + " sy: " + line.getSy());
+            return true;
         }
         else
-           Toast.makeText(getApplicationContext(),"Zbyt dlugi ruch", Toast.LENGTH_SHORT).show();
-
-        Log.d("COORDS","fx: " + fx + " fy: " + fy + " sx: " + sx + " sy: " + sy);
+            return false;
     }
 
     public void rysujPilke()
     {
         int SRODEK = 71;
+        Ball ball = new Ball(this);
+        ball.createBall(listViews.get(SRODEK));
 
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX/2, countX/2);
 
-        int centerX = listViews.get(SRODEK).getWidth() / 4;
-        int centerY = listViews.get(SRODEK).getHeight() / 4;
-        params.leftMargin = listViews.get(SRODEK).getLeft() + centerX;
-        params.topMargin = listViews.get(SRODEK). getTop() + centerY;
-        pilka = new ImageView(this);
-        pilka.setAdjustViewBounds(true);
-        pilka.setImageResource(R.drawable.sball);
-        pilka.bringToFront();
-        pilka.setClickable(false);
+        params.leftMargin = listViews.get(SRODEK).getLeft() + ball.getCenterX();
+        params.topMargin = listViews.get(SRODEK). getTop() + ball.getCenterY();
+
+        pilka = ball;
         frameLayout.addView(pilka, params);
 
 
@@ -362,18 +252,13 @@ public class Game extends AppCompatActivity {
     public void rysujBoisko()
     {
         int[] fieldID = {12, 13, 14, 15, 4, 5, 6, 17, 18, 19, 20, 31, 42, 53, 64, 75, 86, 97, 108, 119, 130, 129, 128, 127, 138, 137, 136, 125, 124, 123, 122, 111, 100, 89, 78, 67, 56, 45, 34, 23, 12};
-       // FrameLayout fr = (FrameLayout) findViewById(R.id.FLlay);
+        int[] notClickableField = {0, 1, 2, 3, 7, 8, 9, 10, 11, 21, 22, 32, 33, 43, 44, 54, 55, 65, 66, 76, 77, 87, 88, 98, 99, 109, 110, 120, 121, 131, 132, 133, 134, 135, 139, 140, 141, 142, 143};
+
         for(int i =0;i<fieldID.length - 1;i++)
-        {
-            Log.e("Przed", "pobranie");
             rysujLinie(listViews.get(fieldID[i]), listViews.get(fieldID[i+1]));
-           // listViews.get(fieldID[i]).performClick();
-           // listViews.get(fieldID[i]).setX(1000);
-            Log.e("Po", "wcisnieto");
 
-//            iv.performClick();
-        }
-
+        for (int i=0;i < notClickableField.length - 1; i++)
+            listViews.get(notClickableField[i]).setEnabled(false);
     }
 
 }
