@@ -1,59 +1,30 @@
 package test.pkantor.soccer1;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.media.Image;
-import android.opengl.Visibility;
-import android.os.SystemClock;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.FragmentManagerNonConfig;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.ActionBar;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.DragEvent;
-import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.GridLayoutAnimationController;
-import android.view.animation.TranslateAnimation;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.GridLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.floor;
-import static java.lang.Math.pow;
 import static java.lang.Math.round;
-import static java.lang.Math.sqrt;
 import static test.pkantor.soccer1.R.layout.activity_game;
 
 
@@ -67,6 +38,9 @@ public class Game extends AppCompatActivity {
 
     float x,y,dx,dy;
     FrameLayout.LayoutParams flParams;
+
+    int progressStatus = 0;
+    private Handler handler = new Handler();
 
     int i = 0;
     int left = 0;
@@ -82,9 +56,12 @@ public class Game extends AppCompatActivity {
     ScaleGestureDetector scaleGestureDetector;
     List<ImageView> listViews;
     List<ImageView> listLinie;
+    List<Field> listFields;
     private float scale = 1f;
     boolean game = false;
-
+    Player player1;
+    Player player2;
+    Button acceptMove;
 //    float fx = 0;
 //    float fy = 0;
 //    float sx = 0;
@@ -94,25 +71,29 @@ public class Game extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_game);
-        Button boisko = (Button) findViewById(R.id.boisko);
-        boisko.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view)
-            {
-                rysujBoisko();
-            }
-        });
-
+        //Button boisko = (Button) findViewById(R.id.boisko);
+        //boisko.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view)
+//            {
+//                rysujBoisko();
+//            }
+//        });
+        acceptMove = (Button) findViewById(R.id.acceptMove);
+        player1 = new Player();
+        player2 = new Player();
         int c = 0;
         int r = 0;
         listViews = new ArrayList<>();
         listLinie = new ArrayList<>();
+        listFields = new ArrayList<>();
         lay = (FrameLayout) findViewById(R.id.FLlay);
         lay.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                rysujBoisko();
-                rysujPilke();
+//                rysujBoisko();
+//                rysujPilke();
+                startGame();
                 lay.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -124,6 +105,7 @@ public class Game extends AppCompatActivity {
         countY = round(height/13);
         countX = round(width/11);
         srodekX = countX/2 - 1;
+
         for (int i = 1; i < 144; i++) { //countX*countY
             final Field pol = new Field(this);
             pol.setId(i - 1);
@@ -131,11 +113,8 @@ public class Game extends AppCompatActivity {
             params.leftMargin = left;
             params.topMargin = top;
 
-            //params.
-//            params.setGravity(Gravity.CENTER_HORIZONTAL);
-//            params.columnSpec = GridLayout.spec(c);
-//            params.rowSpec = GridLayout.spec(r);
-//            iv.setLayoutParams(params);
+            //pol.setScaleType(ImageView.ScaleType.CENTER_CROP); // TODO moze sie przydac
+            listFields.add(pol);
             lay.addView(pol, params);
             listViews.add(pol);
             if ((i % 11 == 0) && (i != 1)) {
@@ -165,6 +144,23 @@ public class Game extends AppCompatActivity {
                                     pilka.bringToFront();
                                     pilka.invalidate();
                                     _source = _destination;
+
+                                    if (player1.isAdditionalMove())
+                                    {
+                                        player1.setMove(true);
+                                        player2.setMove(!player1.isMove());
+                                    }
+                                    else if (player2.isAdditionalMove())
+                                    {
+                                        player2.setMove(true);
+                                        player1.setMove(!player2.isMove());
+                                    }
+                                    else
+                                    {
+                                        player1.setMove(player2.isMove());
+                                        player2.setMove(!player1.isMove());
+                                    }
+                                    whoMoves();
                                 }
                             }
                             else
@@ -195,6 +191,53 @@ public class Game extends AppCompatActivity {
 
     }
 
+    public void startCounting()
+    {
+        ObjectAnimator colorFade = ObjectAnimator.ofObject(acceptMove, "backgroundColor", new ArgbEvaluator(), Color.argb(255,255,255,255), 0xff000000);
+        colorFade.setDuration(10000);
+        colorFade.start();
+    }
+
+    public void clickAcceptMove(View v)
+    {
+        startCounting();
+       final ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(progressStatus < 100)
+                {
+                    progressStatus++;
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            pb.setProgress(progressStatus);
+                        }
+                    });
+                    try
+                    {
+                        Thread.sleep(100);
+                    }catch (InterruptedException e) {e.printStackTrace();}
+                }
+            }
+        }).start();
+    }
+
+    public void startGame()
+    {
+        rysujBoisko();
+        rysujPilke();
+        player1.setMove(true);
+        whoMoves();
+    }
+    public void whoMoves()
+    {
+        TextView tv = (TextView) findViewById(R.id.textView2);
+        if (player1.isMove())
+            tv.setText("Ruch Gracza 1");
+        else
+            tv.setText("Ruch Gracza 2");
+    }
     public void clickWyczysc()
     {
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
@@ -212,20 +255,231 @@ public class Game extends AppCompatActivity {
             Toast.makeText(this, "Nie mozna wrocic bardziej", Toast.LENGTH_SHORT).show();
     }
 
+    public boolean checkIfShotPossible(ImageView source, ImageView destination) // TODO przerobic cale na switch case
+    {
+        int[][] srcShots = listFields.get(source.getId()).getShots();
+        int[][] dstShots = listFields.get(destination.getId()).getShots();
+        int possibleMoves = 0;
+        boolean additionalMove = false;
+
+        for (int i=0;i<dstShots.length;i++)
+        {
+            for(int j=0;j<dstShots.length;j++)
+                if (dstShots[i][j] == 1)
+                    additionalMove = true;
+                else
+                    possibleMoves++;
+//                if (additionalMove) break;
+        }
+
+//        for (int i=0;i<srcShots.length;i++)
+//            for (int j=0;j<srcShots.length;j++)
+//                if (srcShots[i][j] == 0)
+//                    possibleMoves ++;
+
+        if (possibleMoves < 2) return false;
+
+        if (Math.abs(destination.getId() - source.getId()) == 1) // --
+        {
+            if (destination.getId() > source.getId())
+            {
+                if ((srcShots[1][2] == 1) || (dstShots[1][0] == 1))
+                    return false;
+                else
+                {
+                    srcShots[1][2] = 1;
+                    dstShots[1][0] = 1;
+                }
+            }
+            else
+            {
+                if ((srcShots[1][0] == 1) || (dstShots[1][2] == 1))
+                    return false;
+                else
+                {
+                    srcShots[1][0] = 1;
+                    dstShots[1][2] = 1;
+                }
+            }
+        }
+        else if (Math.abs(destination.getId() - source.getId()) == 11) // |
+        {
+            if (destination.getId() > source.getId()) {
+                if ((srcShots[2][1] == 1) || (dstShots[0][1] == 1))
+                    return false;
+                else {
+                    srcShots[2][1] = 1;
+                    dstShots[0][1] = 1;
+                }
+            } else {
+                if ((srcShots[0][1] == 1) || (dstShots[2][1] == 1))
+                    return false;
+                else {
+                    srcShots[0][1] = 1;
+                    dstShots[2][1] = 1;
+                }
+            }
+        }
+        else // \ /
+        {
+            switch(destination.getId() - source.getId())
+            {
+                case -12:
+                    if ((srcShots[0][0] == 1) || (dstShots[2][2] == 1))
+                        return false;
+                    srcShots[0][0] = 1;
+                    dstShots[2][2] = 1;
+                    break;
+                case -10:
+                    if ((srcShots[0][2] == 1) || (dstShots[2][0] == 1))
+                        return false;
+                    srcShots[0][2] = 1;
+                    dstShots[2][0] = 1;
+                    break;
+                case 10:
+                    if ((srcShots[2][0] == 1) || (dstShots[0][2] == 1))
+                        return false;
+                    srcShots[2][0] = 1;
+                    dstShots[0][2] = 1;
+                    break;
+                case 12:
+                    if ((srcShots[2][2] == 1) || (dstShots[0][0] == 1))
+                        return false;
+                    srcShots[2][2] = 1;
+                    dstShots[0][0] = 1;
+                    break;
+                default:
+                    return false;
+            }
+        }
+        if (player1.isMove())
+            player1.setAdditionalMove(additionalMove);
+        else
+            player2.setAdditionalMove(additionalMove);
+
+        Log.d("ShotsSrc", String.valueOf(srcShots[0][0]) + " " + String.valueOf(srcShots[0][1]) + " " +String.valueOf(srcShots[0][2]) + " " +String.valueOf(srcShots[1][0]) + " " +String.valueOf(srcShots[1][1]) + " " +String.valueOf(srcShots[1][2]) + " " +String.valueOf(srcShots[2][0]) + " " +String.valueOf(srcShots[2][1]) + " " +String.valueOf(srcShots[2][2]));
+        Log.d("ShotsDst", String.valueOf(dstShots[0][0]) + " " + String.valueOf(dstShots[0][1]) + " " +String.valueOf(dstShots[0][2]) + " " +String.valueOf(dstShots[1][0]) + " " +String.valueOf(dstShots[1][1]) + " " +String.valueOf(dstShots[1][2]) + " " +String.valueOf(dstShots[2][0]) + " " +String.valueOf(dstShots[2][1]) + " " +String.valueOf(dstShots[2][2]));
+
+
+        checkIfGameOver(possibleMoves, destination.getId());
+
+        return true;
+    }
+
+    public void checkIfGameOver(int possibleMoves, int fieldId) // TODO poprawic wyswietlanie bramek bo jakies cuda sie dziejo
+    {                                                               // TODO dodac przycisk akceptujacy ruch
+        int[] p2Goal  = {4, 5, 6};
+        int[] p1Goal = {138, 137, 136};
+
+        boolean isGoal = false;
+        boolean isOwnGoal = false;
+
+            for (int i: p2Goal)
+                if (i == fieldId)
+                {
+                    if (player2.isMove())
+                        isOwnGoal = true;
+                    else
+                        isGoal = true;
+                    break;
+                }
+
+            if (!isGoal)
+                for (int i: p1Goal)
+                    if (i == fieldId)
+                    {
+                        if (player1.isMove())
+                            isOwnGoal = true;
+                        else
+                            isGoal = true;
+                        break;
+                    }
+
+
+
+        Intent intent = new Intent(this, GameOver.class);
+//        intent.putExtra("movep1", player1.isMove());
+//        intent.putExtra("movep2", player2.isMove());
+//        intent.putExtra("isGoal", isGoal);
+//        intent.putExtra("isOwnGoal", isOwnGoal);
+
+        if (player1.isMove())
+        {
+            if (isOwnGoal)
+            {
+                Toast.makeText(this, "Bramka samobójcza, wygrywa Gracz 2", Toast.LENGTH_LONG).show();
+                intent.putExtra("goal", 1);
+                startActivity(intent);
+            }
+
+            else if (isGoal)
+            {
+                Toast.makeText(this, "Wygrywa Gracz 1", Toast.LENGTH_LONG).show();
+                intent.putExtra("goal", 2);
+                startActivity(intent);
+            }
+
+        }
+        else if (player2.isMove())
+            if (isOwnGoal)
+            {
+                Toast.makeText(this, "Bramka samobójcza, wygrywa Gracz 1", Toast.LENGTH_LONG).show();
+                intent.putExtra("goal", 3);
+                startActivity(intent);
+            }
+
+            else if (isGoal)
+            {
+                Toast.makeText(this, "Wygrywa Gracz 2", Toast.LENGTH_LONG).show();
+                intent.putExtra("goal", 4);
+                startActivity(intent);
+            }
+
+
+        if (possibleMoves <= 2)
+        {
+            final TextView tv = (TextView) findViewById(R.id.textView2);
+            if (player1.isMove())
+            {
+
+//                Toast.makeText(this, "Wygrywa Gracz 2", Toast.LENGTH_LONG).show();
+                tv.setText("Wygrywa Gracz 2");
+                intent.putExtra("goal", 4);
+                startActivity(intent);
+            }else
+            {
+
+//                Toast.makeText(this, "Wygrywa Gracz 1", Toast.LENGTH_LONG).show();
+                tv.setText("Wygrywa Gracz 1");
+                intent.putExtra("goal", 2);
+                startActivity(intent);
+            }
+
+
+
+            //this.finish();
+            // return false; // TODO activity konczace gre !!!
+        }
+    }
+
     public boolean rysujLinie(ImageView source, ImageView destination) // TODO poprawic wyswietlanie linii
     {
         Line line = new Line(this);
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX + 15, _source.getWidth()); // szer ; dl
-        if (line.createLine(source, destination))
+        //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX + 15, _source.getWidth()); // szer ; dl
+        if (line.createLine(source, destination) && (checkIfShotPossible(source, destination)))
         {
+
            // params.leftMargin = ((int) line.getFx() < (int) line.getSx()) ? (int) line.getFx() : (int) line.getSx();
            // params.topMargin = ((int) line.getFy() < (int) line.getSy()) ? (int) line.getFy(): (int) line.getSy();
             listLinie.add(line);
             lay.addView(line, line.getParams());
             lay.invalidate();
 
-            Log.d("COORDS", "fx: " + line.getFx() + " fy: " + line.getFy() + " sx: " + line.getSx() + " sy: " + line.getSy());
+           // Log.d("COORDS", "fx: " + line.getFx() + " fy: " + line.getFy() + " sx: " + line.getSx() + " sy: " + line.getSy());
+//            Log.d("ShotsSrc", String.valueOf(srcShots[0][0]) + " " + String.valueOf(srcShots[0][1]) + " " +String.valueOf(srcShots[0][2]) + " " +String.valueOf(srcShots[1][0]) + " " +String.valueOf(srcShots[1][1]) + " " +String.valueOf(srcShots[1][2]) + " " +String.valueOf(srcShots[2][0]) + " " +String.valueOf(srcShots[2][1]) + " " +String.valueOf(srcShots[2][2]));
+//            Log.d("ShotsDst", String.valueOf(dstShots[0][0]) + " " + String.valueOf(dstShots[0][1]) + " " +String.valueOf(dstShots[0][2]) + " " +String.valueOf(dstShots[1][0]) + " " +String.valueOf(dstShots[1][1]) + " " +String.valueOf(dstShots[1][2]) + " " +String.valueOf(dstShots[2][0]) + " " +String.valueOf(dstShots[2][1]) + " " +String.valueOf(dstShots[2][2]));
+
             return true;
         }
         else
@@ -252,13 +506,47 @@ public class Game extends AppCompatActivity {
     public void rysujBoisko()
     {
         int[] fieldID = {12, 13, 14, 15, 4, 5, 6, 17, 18, 19, 20, 31, 42, 53, 64, 75, 86, 97, 108, 119, 130, 129, 128, 127, 138, 137, 136, 125, 124, 123, 122, 111, 100, 89, 78, 67, 56, 45, 34, 23, 12};
+
+        int[] rightSide = {20, 31, 42, 53, 64, 75, 86, 97, 108, 119, 130};
+        int[] leftSide = {122, 111, 100, 89, 78, 67, 56, 45, 34, 23, 12};
+        int[] upSide = {12, 13, 14, 15, 17, 18, 19, 20, 4, 5, 6};
+        int[] downSide = {130, 129, 128, 127, 125, 124, 123, 122, 138, 137, 136};
+
         int[] notClickableField = {0, 1, 2, 3, 7, 8, 9, 10, 11, 21, 22, 32, 33, 43, 44, 54, 55, 65, 66, 76, 77, 87, 88, 98, 99, 109, 110, 120, 121, 131, 132, 133, 134, 135, 139, 140, 141, 142, 143};
 
-        for(int i =0;i<fieldID.length - 1;i++)
+        for(int i = 0; i < fieldID.length - 1; i++)
             rysujLinie(listViews.get(fieldID[i]), listViews.get(fieldID[i+1]));
 
         for (int i=0;i < notClickableField.length - 1; i++)
             listViews.get(notClickableField[i]).setEnabled(false);
+
+        for (int i: rightSide)
+        {
+            int[][] tmpShots = listFields.get(i).getShots();
+            tmpShots[0][2] = tmpShots[1][2] = tmpShots[2][2] = 1;
+            listFields.get(i).setShots(tmpShots);
+        }
+
+        for (int i:leftSide)
+        {
+            int[][] tmpShots = listFields.get(i).getShots();
+            tmpShots[0][0] = tmpShots[1][0] = tmpShots[2][0] = 1;
+            listFields.get(i).setShots(tmpShots);
+        }
+
+        for (int i: upSide)
+        {
+            int[][] tmpShots = listFields.get(i).getShots();
+            tmpShots[0][0] = tmpShots[0][1] = tmpShots[0][2] = 1;
+            listFields.get(i).setShots(tmpShots);
+        }
+
+        for (int i: downSide)
+        {
+            int[][] tmpShots = listFields.get(i).getShots();
+            tmpShots[2][0] = tmpShots[2][1] = tmpShots[2][2] = 1;
+            listFields.get(i).setShots(tmpShots);
+        }
     }
 
 }

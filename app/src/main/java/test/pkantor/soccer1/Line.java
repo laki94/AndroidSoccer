@@ -70,8 +70,8 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
         sx = dst.getX();
         sy = dst.getY();
 
-        params = new FrameLayout.LayoutParams(100,100);
-
+        params = new FrameLayout.LayoutParams(13,100);
+        this.setScaleType(ScaleType.CENTER_CROP);
         if ((abs(fx - sx) > src.getWidth()) || (abs(fy - sy) > src.getHeight()))
         {
             Toast.makeText(getContext(), "Zbyt dlugi ruch", Toast.LENGTH_LONG).show();
@@ -94,12 +94,16 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
            // fx -= 6;
             fy += iv.getHeight() / 2;
             sy += iv.getHeight() / 2;
+            fx += (iv.getWidth() / 2 - params.width / 2) + 1;
+            sx += (iv.getWidth() / 2 - params.width / 2) + 1;
             //fy += countY / 2 - 18;
            // sx -= 6;
             //sy += countY / 2 - 18;
 
             params.leftMargin = ((int) getFx() < (int) getSx()) ? (int) getFx() : (int) getSx();
             params.topMargin = ((int) getFy() < (int) getSy()) ? (int) getFy(): (int) getSy();
+            this.setLayoutParams(params);
+
             return true;
         } catch (Exception e) {
             Log.e("Exc:", e.getMessage());
@@ -115,11 +119,12 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
            // this.params.width = iv.getWidth();
 //            this.params.height = 10;
             this.setRotation(90);
-            fx += iv.getWidth() / 2;
-            sx += iv.getWidth() / 2;
+            fx += (iv.getWidth() - params.width / 2) + 2;
+            sx += (iv.getWidth() - params.width / 2) + 2;
 
             params.leftMargin = ((int) getFx() < (int) getSx()) ? (int) getFx() : (int) getSx();
             params.topMargin = ((int) getFy() < (int) getSy()) ? (int) getFy(): (int) getSy();
+
             return true;
         } catch (Exception e)
         {
@@ -141,13 +146,15 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
         }
 
         int skos = (int) sqrt(pow(iv.getWidth(), 2) + pow(iv.getHeight(), 2));
-        fx += iv.getWidth() / 2;
-        sx += iv.getWidth() / 2;
-        fy += iv.getHeight() / 2 - 19;
-        sy += iv.getHeight() / 2 - 19;
+        fx += iv.getWidth() - 1;
+        sx += iv.getWidth() - 1;
+        fy += iv.getHeight() / 3 - 4;
+        sy += iv.getHeight() / 3 - 4;
+//        fy += iv.getHeight() / 2 - 19;
+//        sy += iv.getHeight() / 2 - 19;
 
-        //this.params.width = 8;
-        this.params.height = skos;
+        this.params.width = 5; // TODO zmniejszyc grubosc linii
+        this.params.height = skos + 4;
 
         params.leftMargin = ((int) getFx() < (int) getSx()) ? (int) getFx() : (int) getSx();
         params.topMargin = ((int) getFy() < (int) getSy()) ? (int) getFy(): (int) getSy();

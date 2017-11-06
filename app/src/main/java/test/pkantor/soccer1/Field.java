@@ -16,6 +16,7 @@ public class Field extends android.support.v7.widget.AppCompatImageView{
     public Field(Context context) {
         super(context);
         this.shots = new int[3][3];
+        initializeShots();
         this.setImageResource(R.drawable.pole);
         this.setClickable(true);
         this.setAdjustViewBounds(true);
@@ -35,5 +36,12 @@ public class Field extends android.support.v7.widget.AppCompatImageView{
 
     public void setShots(int[][] shots) {
         this.shots = shots;
+    }
+
+    private void initializeShots()
+    {
+        for (int i=0;i<shots.length;i++)
+            for(int j=0;j<shots.length;j++)
+                shots[i][j] = 0;
     }
 }
