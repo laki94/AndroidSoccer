@@ -6,6 +6,7 @@ package test.pkantor.soccer1;
 
 public class Player {
 
+    private String name;
     private int points = 0;
     private boolean move = false;
     private boolean additionalMove = false;
@@ -13,6 +14,13 @@ public class Player {
     public Player()
     {
 
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isAdditionalMove() {

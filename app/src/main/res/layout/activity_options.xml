@@ -6,12 +6,10 @@
     android:layout_height="match_parent"
     tools:context="test.pkantor.soccer1.Options">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="251dp"
-        android:layout_height="119dp"
-        android:text="Opcje"
-        android:textSize="36sp"
-        tools:layout_editor_absoluteX="54dp"
-        tools:layout_editor_absoluteY="107dp" />
+    <Button
+        android:id="@+id/bSetNames"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Names"
+        android:onClick="clickSetNames"/>
 </android.support.constraint.ConstraintLayout>

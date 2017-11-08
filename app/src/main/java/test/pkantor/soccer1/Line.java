@@ -153,7 +153,7 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
 //        fy += iv.getHeight() / 2 - 19;
 //        sy += iv.getHeight() / 2 - 19;
 
-        this.params.width = 5; // TODO zmniejszyc grubosc linii
+       // this.params.width = 5; // TODO zmniejszyc grubosc linii
         this.params.height = skos + 4;
 
         params.leftMargin = ((int) getFx() < (int) getSx()) ? (int) getFx() : (int) getSx();

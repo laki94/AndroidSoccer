@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Soccer1</string>
+    <string name="firstPlayerName">Podaj nazwę pierwszego gracza</string>
+    <string name="secondPlayerName">Podaj nazwę drugiego gracza</string>
+    <string name="buttonSave">Zapisz</string>
+    <string name="buttonPlayLocal">Graj lokalnie</string>
+    <string name="buttonPlayBluetooth">Graj przez bluetooth</string>
+    <string name="buttonPlayNet">Graj przez internet</string>
 </resources>

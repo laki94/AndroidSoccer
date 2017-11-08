@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="test.pkantor.soccer1.dialog_setnames">
+
+    <TextView
+        android:id="@+id/tvFirstPlayerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/firstPlayerName"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/etFirstPlayerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/tvSecondPlayerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/secondPlayerName"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/etSecondPlayerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/bSaveNames"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:onClick="clickSetNames"
+        android:text="@string/buttonSave"
+        android:textSize="24sp" />
+
+</LinearLayout>

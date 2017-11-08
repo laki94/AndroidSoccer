@@ -11,16 +11,25 @@ public class Menu extends AppCompatActivity {
     Button bPlay;
     Button bQuit;
     Button bOptions;
+
+    @Override
+    public void onBackPressed()
+    {
+
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_menu);
         bPlay = (Button) findViewById(R.id.bPlay);
         bQuit = (Button) findViewById(R.id.bQuit);
         bOptions = (Button) findViewById(R.id.bOptions);
     }
     public void clickPlay(View v) {
-        Intent intent = new Intent(this, Game.class);
+        Intent intent = new Intent(this, GameModes.class);
         startActivity(intent);
     }
     public void clickOptions(View v) {
