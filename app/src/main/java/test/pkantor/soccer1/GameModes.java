@@ -51,12 +51,24 @@ public class GameModes extends AppCompatActivity{
             {
                 if ((!p1Name.getText().toString().isEmpty()) && (!p2Name.getText().toString().isEmpty()))
                 {
-                    intent.putExtra("p1Name", p1Name.getText().toString());
-                    intent.putExtra("p2Name", p2Name.getText().toString());
-                    startActivity(intent);
+                    if ((p1Name.getText().length() > 8) || (p2Name.getText().length() > 8))
+                        Toast.makeText(getApplicationContext(), "Nazwa gracza nie może przekraczać 8 znaków", Toast.LENGTH_LONG).show();
+                    else if ((p1Name.getText().toString().contains(" ")) || p2Name.getText().toString().contains(" "))
+                        Toast.makeText(getApplicationContext(), "Nie używaj białych znaków", Toast.LENGTH_LONG).show();
+                    else
+                    {
+                        intent.putExtra("p1Name", p1Name.getText().toString());
+                        intent.putExtra("p2Name", p2Name.getText().toString());
+                        startActivity(intent);
+                    }
                 }
                 else
-                    Toast.makeText(GameModes.this, "blbelel", Toast.LENGTH_SHORT).show();
+                {
+                    intent.putExtra("p1Name", "Gracz 1");
+                    intent.putExtra("p2Name", "Gracz 2");
+                    startActivity(intent);
+                }
+//                    Toast.makeText(GameModes.this, "blbelel", Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -14,7 +14,8 @@ public class GameOver extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
-        Intent intent = new Intent(this, Menu.class);
+        Intent intent = new Intent(this, Menu.class); // TODO dodac do intentu wysylanie nazw graczy
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 

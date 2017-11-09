@@ -11,11 +11,13 @@ import android.widget.ImageView;
 public class Field extends android.support.v7.widget.AppCompatImageView{
 
     private int[][] shots;
+    private int[][] lastShot;
     private ImageView imageResource;
 
     public Field(Context context) {
         super(context);
         this.shots = new int[3][3];
+        this.lastShot = new int[3][3];
         initializeShots();
         this.setImageResource(R.drawable.pole);
         this.setClickable(true);
@@ -30,6 +32,14 @@ public class Field extends android.support.v7.widget.AppCompatImageView{
         super(context, attrs, defStyleAttr);
     }
 
+    public int[][] getLastShot() {
+        return lastShot;
+    }
+
+    public void setLastShot(int[][] lastShot) {
+        this.lastShot = lastShot;
+    }
+
     public int[][] getShots() {
         return shots;
     }
@@ -38,10 +48,13 @@ public class Field extends android.support.v7.widget.AppCompatImageView{
         this.shots = shots;
     }
 
+
     private void initializeShots()
     {
         for (int i=0;i<shots.length;i++)
             for(int j=0;j<shots.length;j++)
-                shots[i][j] = 0;
+                lastShot[i][j] = shots[i][j] = 0;
+
+
     }
 }

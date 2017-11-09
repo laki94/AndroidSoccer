@@ -9,13 +9,22 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.CheckBox;
 
 public class Options extends AppCompatActivity{
+
+    CheckBox cbAcceptMove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        //TODO wysylanie informacji czy wyswietlac przycisk akceptacji czy nie
     }
 
     public void clickSetNames(View v)
@@ -29,12 +38,14 @@ public class Options extends AppCompatActivity{
         //AlertDialog dialog = builder.create();
        // dialog.show();
 
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.activity_dialog_setnames);
 
-        dialog.show();
+
+//        Dialog dialog = new Dialog(this);
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        dialog.setCancelable(true);
+//        dialog.setContentView(R.layout.activity_dialog_setnames);
+//
+//        dialog.show();
     }
 
 //    @Override

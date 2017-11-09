@@ -6,10 +6,4 @@
     android:layout_height="match_parent"
     tools:context="test.pkantor.soccer1.Options">
 
-    <Button
-        android:id="@+id/bSetNames"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Names"
-        android:onClick="clickSetNames"/>
 </android.support.constraint.ConstraintLayout>
