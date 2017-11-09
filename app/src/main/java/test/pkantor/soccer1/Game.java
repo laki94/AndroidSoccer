@@ -7,9 +7,11 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -34,7 +36,6 @@ public class Game extends AppCompatActivity {
 
     public static final int POLE_WYSOKOSC = 65;
     public static final int POLE_SZEROKOSC = 65;
-
 
     FrameLayout lay;
 
@@ -67,6 +68,7 @@ public class Game extends AppCompatActivity {
     Player player2;
     Button acceptMove;
 
+    // TODO dac toolbara z opcjami
 
     @Override
     public void onBackPressed()
@@ -646,14 +648,14 @@ public class Game extends AppCompatActivity {
         for (int i: rightSide)
         {
             int[][] tmpShots = listFields.get(i).getShots();
-            tmpShots[0][2] = tmpShots[1][2] = tmpShots[2][2] = 1;
+            tmpShots[0][2] = tmpShots[1][2] = tmpShots[2][2] = tmpShots[0][1] = tmpShots[2][1] = 1;
             listFields.get(i).setShots(tmpShots);
         }
 
         for (int i:leftSide)
         {
             int[][] tmpShots = listFields.get(i).getShots();
-            tmpShots[0][0] = tmpShots[1][0] = tmpShots[2][0] = 1;
+            tmpShots[0][0] = tmpShots[1][0] = tmpShots[2][0] = tmpShots[0][1] = tmpShots[2][1] = 1;
             listFields.get(i).setShots(tmpShots);
         }
 
@@ -661,11 +663,11 @@ public class Game extends AppCompatActivity {
         {
             int[][] tmpShots = listFields.get(i).getShots();
             if (i == 15)
-                tmpShots[0][0] = tmpShots[0][1] = 1;
+                tmpShots[0][0] = tmpShots[0][1] = tmpShots[1][1] = 1;
             else if (i == 17)
-                tmpShots[0][1] = tmpShots[0][2] = 1;
+                tmpShots[0][1] = tmpShots[0][2] = tmpShots[1][2] = 1;
             else
-                tmpShots[0][0] = tmpShots[0][1] = tmpShots[0][2] = 1;
+                tmpShots[0][0] = tmpShots[0][1] = tmpShots[0][2] = tmpShots[1][2] = tmpShots[1][1] = 1;
             listFields.get(i).setShots(tmpShots);
         }
 
@@ -673,11 +675,11 @@ public class Game extends AppCompatActivity {
         {
             int[][] tmpShots = listFields.get(i).getShots();
             if (i == 125)
-                tmpShots[2][0] = tmpShots[2][1] = 1;
+                tmpShots[2][0] = tmpShots[2][1] = tmpShots[1][1] = 1;
             else if (i == 127)
-                tmpShots[2][1] = tmpShots[2][2] = 1;
+                tmpShots[2][1] = tmpShots[2][2] = tmpShots[1][2] = 1;
             else
-                tmpShots[2][0] = tmpShots[2][1] = tmpShots[2][2] = 1;
+                tmpShots[2][0] = tmpShots[2][1] = tmpShots[2][2] = tmpShots[1][2] = tmpShots[1][1] = 1;
             listFields.get(i).setShots(tmpShots);
         }
     }
