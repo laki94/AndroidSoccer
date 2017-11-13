@@ -26,16 +26,26 @@ public class Menu extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
         bPlay = (Button) findViewById(R.id.bPlay);
         bQuit = (Button) findViewById(R.id.bQuit);
-        bOptions = (Button) findViewById(R.id.bOptions);
+       // bOptions = (Button) findViewById(R.id.bOptions);
     }
     public void clickPlay(View v) {
+//        Bundle extras = getIntent().getExtras();
+//        Options options = null;
+//        if (extras != null)
+//            options = extras.getParcelable("parcel_options");
+//
+        Intent i = getIntent();
+        Options options = i.getParcelableExtra("parcel_options");
+
         Intent intent = new Intent(this, GameModes.class);
+        if (options != null)
+            intent.putExtra("parcel_options", options);
         startActivity(intent);
     }
-    public void clickOptions(View v) {
-        Intent intent = new Intent(this, Options.class);
-        startActivity(intent);
-    }
+//    public void clickOptions(View v) {
+//        Intent intent = new Intent(this, Options.class);
+//        startActivity(intent);
+//    }
     public void clickQuit(View v) {
         finish();
         System.exit(0);

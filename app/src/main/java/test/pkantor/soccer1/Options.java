@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,62 +13,66 @@ import android.view.View;
 import android.view.Window;
 import android.widget.CheckBox;
 
-public class Options extends AppCompatActivity{
+public class Options extends AppCompatActivity implements Parcelable {
 
     CheckBox cbAcceptMove;
+
+    int acceptMove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
+
+        cbAcceptMove = (CheckBox) findViewById(R.id.cbShowAcceptMove);
+    }
+
+    public static final Parcelable.Creator<Options> CREATOR = new Parcelable.Creator<Options>() {
+        public Options createFromParcel(Parcel in) {
+            return new Options(in);
+        }
+
+        public Options[] newArray(int size) {
+            return new Options[size];
+        }
+    };
+
+    public Options ()
+    {
+
+    }
+
+    public Options(Parcel in)
+    {
+        acceptMove = in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeInt(1);
+    }
+
+    public boolean getAcceptMove()
+    {
+        if (acceptMove == 1)
+            return true;
+        else
+            return false;
     }
 
     @Override
     public void onBackPressed()
     {
-        //TODO wysylanie informacji czy wyswietlac przycisk akceptacji czy nie
+        Options options = new Options();
+
+        Intent intent = new Intent(this, Menu.class);
+        intent.putExtra("parcel_options", options);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
-
-    public void clickSetNames(View v)
-    {
-       //Intent intent = new Intent(this, dialog_setnames.class);
-
-        //startActivity(intent);
-
-       // AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        //builder.setMessage("mesedz").setTitle("tytul");
-        //AlertDialog dialog = builder.create();
-       // dialog.show();
-
-
-
-//        Dialog dialog = new Dialog(this);
-//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        dialog.setCancelable(true);
-//        dialog.setContentView(R.layout.activity_dialog_setnames);
-//
-//        dialog.show();
-    }
-
-//    @Override
-//    public Dialog onCreateDialog(Bundle savedInstanceState)
-//    {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        LayoutInflater inflater = this.getLayoutInflater();
-//
-//        builder.setView(inflater.inflate(R.layout.activity_dialog_setnames, null))
-//                .setPositiveButton("Tak", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//
-//                    }
-//                })
-//                .setNegativeButton("Nie", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//
-//                    }
-//                });
-//        return builder.create();
-//    }
 }

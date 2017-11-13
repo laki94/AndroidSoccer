@@ -6,4 +6,14 @@
     <string name="buttonPlayLocal">Graj lokalnie</string>
     <string name="buttonPlayBluetooth">Graj przez bluetooth</string>
     <string name="buttonPlayNet">Graj przez internet</string>
+    <string name="buttonAcceptMove">Akceptuj ruch</string>
+    <string name="whoMoves">Ruch gracza, </string>
+    <string name="doYouWantToExit">Czy na pewno chcesz wyjść?</string>
+    <string name="bYes">Tak</string>
+    <string name="bNo">Nie</string>
+    <string name="bPlay">Graj</string>
+    <string name="bOptions">Opcje</string>
+    <string name="bQuit">Wyjdź</string>
+    <string name="cbShowAcceptMove">Przycisk akceptacji ruchu</string>
+
 </resources>

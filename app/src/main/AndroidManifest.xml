@@ -17,11 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".Options" />
-        <activity android:name=".Game" />
-        <activity android:name=".GameOver" />
         <activity
-            android:name=".dialog_setnames"
-            android:theme="@android:style/Theme.Holo.Dialog" />
+            android:name=".Game"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".GameOver" />
         <activity android:name=".GameModes"></activity>
     </application>
 

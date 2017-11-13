@@ -1,80 +1,129 @@
 package test.pkantor.soccer1;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Handler;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.View;
-import android.view.ViewTreeObserver;
+import android.view.*;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Math.abs;
 import static java.lang.Math.round;
-import static test.pkantor.soccer1.R.layout.abc_list_menu_item_radio;
 import static test.pkantor.soccer1.R.layout.activity_game;
+import static test.pkantor.soccer1.R.layout.activity_menu;
 
 
 public class Game extends AppCompatActivity {
 
-    public static final int POLE_WYSOKOSC = 65;
-    public static final int POLE_SZEROKOSC = 65;
-
     FrameLayout lay;
 
-    float x,y,dx,dy;
-    FrameLayout.LayoutParams flParams;
+    private Toast toast = null;
 
-    int progressStatus = 0;
-    private Handler handler = new Handler();
-
-    int i = 0;
     int left = 0;
     int top = 0;
-    int srodekX;
-    int srodekY;
     int countX;
     int countY;
     boolean playerAccepted = true;
     boolean canDelete = false;
+    boolean doShowAcceptButton = true;
     ImageView _source;
     ImageView _destination;
     ImageView _lastDestination;
     ImageView pilka;
-    ScaleGestureDetector scaleGestureDetector;
+
     List<ImageView> listViews;
     List<ImageView> listLinie;
     List<Field> listFields;
-    private float scale = 1f;
-    boolean game = false;
+
     Player player1;
     Player player2;
-    Button acceptMove;
 
-    // TODO dac toolbara z opcjami
+    Button acceptMove;
+    CheckBox cbAcceptMove = null;
 
     @Override
     public void onBackPressed()
     {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.activity_dialog_exit, null);
+        builder.setView(mView);
+        final AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
+
+        Button bYes = (Button) mView.findViewById(R.id.bYes);
+        Button bNo = (Button) mView.findViewById(R.id.bNo);
+
+        bYes.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                        finish();
+                                        System.exit(0);
+                                    }
+                                });
+        bNo.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dialog.dismiss();
+            }
+        });
+
+
+        dialog.show();
 
     }
+
+    public void prepareDrawer()
+    {
+        // TODO
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navView); // TODO zrobic zeby checkbox dzialal
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.layDrawer);
+        navigationView.bringToFront();
+        android.view.Menu menu = navigationView.getMenu();
+
+        final MenuItem menuItem = menu.findItem(R.id.nav_AcceptMove);
+
+        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                CheckBox cb = (CheckBox) item.getActionView();
+                cb.setChecked(!cb.isChecked());
+                return false;
+            }
+        });
+
+        cbAcceptMove = (CheckBox) menuItem.getActionView();
+        cbAcceptMove.setChecked(true);
+        cbAcceptMove.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                doShowAcceptButton = isChecked;
+                if (!isChecked)
+                {
+                    acceptMove.setVisibility(View.INVISIBLE);
+                }
+                else
+                {
+                    acceptMove.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,12 +133,32 @@ public class Game extends AppCompatActivity {
         TextView g1 = (TextView) findViewById(R.id.tvPlayer1);
         TextView g2 = (TextView) findViewById(R.id.tvPlayer2);
 
+        prepareDrawer();
+
+
+
+
+
+//        cbAcceptMove = (CheckBox) header.findViewById(R.id.nav_AcceptMove);
+
+//
+//        cbAcceptMove.setOnClickListener(new View.OnClickListener()
+//        {
+//            public void onClick(View v)
+//            {
+//                cbAcceptMove.setChecked(!cbAcceptMove.isChecked());
+//            }
+//        });
+        //CheckBox cb = (CheckBox) navigationView.getMenu().findItem(R.id.nav_item1).getActionView().findViewById(R.id.checkBox111);
+        //cb.setChecked(false);
+        //cb.setChecked(true);
+
+
 
         acceptMove = (Button) findViewById(R.id.acceptMove);
         player1 = new Player();
         player2 = new Player();
-        int c = 0;
-        int r = 0;
+
         listViews = new ArrayList<>();
         listLinie = new ArrayList<>();
         listFields = new ArrayList<>();
@@ -108,7 +177,6 @@ public class Game extends AppCompatActivity {
         int width = displayMetrics.widthPixels;
         countY = round(height/13);
         countX = round(width/11);
-        srodekX = countX/2 - 1;
 
         for (int i = 1; i < 144; i++) { //countX*countY
             final Field pol = new Field(this);
@@ -126,26 +194,42 @@ public class Game extends AppCompatActivity {
                 left = 0;
             } else left += countX;
 
-            pol.setOnTouchListener(new View.OnTouchListener() { //1111111111111111111111111111111
+            pol.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     switch(motionEvent.getAction())
                     {
                         case MotionEvent.ACTION_DOWN:
                             Log.d("DOWN","" + pol.getId());
-                           // if (game)
-                            if (playerAccepted)
-                                _destination = (ImageView) findViewById(pol.getId());
+
+                            _lastDestination = (ImageView) findViewById(pol.getId());
+
+                            if (!tryToCreateLine(_source, _lastDestination))
+                            {
+                                if (!checkIfShotPossible(_source, _lastDestination))
+                                {
+                                    if (toast != null)
+                                        toast.cancel();
+                                    _lastDestination = _destination;
+                                    toast = Toast.makeText(getApplicationContext(), "Zbyt dlugi ruch", Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
+                            }
                             else
                             {
-                                _destination = (ImageView) findViewById(pol.getId());
+                                if (checkIfShotPossible(_source, _lastDestination))
+                                    _destination = _lastDestination;
+                                else
+                                {
+                                    if (toast != null)
+                                        toast.cancel();
+                                    toast = Toast.makeText(getApplicationContext(), "Ruch w tym kierunku jest niedozwolony", Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
                             }
 
-                            return true;
-                        case MotionEvent.ACTION_UP:
-                            Log.d("UP","" + pol.getId());
-                            if (_source != _destination)
-                            //if ((!game) && ((_destination == _lastDestination) || (_source == _lastDestination) || (_lastDestination == null)))
+
+                            if ((_source != _destination) && (_source != null) && (_destination != null))
                             {
                                 if (rysujLinie(_source, _destination))
                                 {
@@ -157,9 +241,11 @@ public class Game extends AppCompatActivity {
                                     pilka.invalidate();
                                 }
                             }
-                            else
-                                Toast.makeText(getApplicationContext(), "Wcisnij pole swojego następnego ruchu.", Toast.LENGTH_SHORT).show();
-
+                            if (!doShowAcceptButton)
+                                acceptMove.performClick();
+                            return true;
+                        case MotionEvent.ACTION_UP:
+                            Log.d("UP","" + pol.getId());
                             return false;
                         default:
                             return false;
@@ -200,20 +286,21 @@ public class Game extends AppCompatActivity {
         g2.bringToFront();
         g1.setWidth(countX * 4);
         g2.setWidth(countX * 4);
-        g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, countX/ 4);
+        g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, countX / 4);
         g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, countX / 4);
         g1.setText(player1.getName());
         g2.setText(player2.getName());
-        g1.setX(countX * 7); //listFields.get(135).getX());
-        g1.setY((countX *  12) - countX/2); //listFields.get(135).getY());
-        g2.setX(countX * 7); //listFields.get(3).getX());
-        g2.setY((countX * 1) - countX/2) ; //listFields.get(3).getY());
-       // g1.setTranslationX(listFields.get(135).getX());
-        //g1.setTranslationY(listFields.get(135).getY());
-//        g2.setLeft(listFields.get(3).getLeft());
-//        g2.setTop(listFields.get(3).getTop());
-//        g1.setLeft(listFields.get(135).getLeft());
-//        g1.setTop(listFields.get(135).getTop());
+        g1.setX(countX * 7);
+        g1.setY((countX *  12) - countX / 2);
+        g2.setX(countX * 7);
+        g2.setY((countX * 1) - countX / 2) ;
+
+    }
+
+    public boolean tryToCreateLine(ImageView src, ImageView dst)
+    {
+        Line line = new Line(this);
+        return line.canCreateLine(src, dst);
     }
 
     public void startCounting()
@@ -257,7 +344,7 @@ public class Game extends AppCompatActivity {
         return possibleMoves;
     }
 
-    public void deleteLastLine(ImageView imageView)
+    public void deleteLastLine()
     {
         if (canDelete)
             if (listLinie.size() > 40)
@@ -266,33 +353,40 @@ public class Game extends AppCompatActivity {
                 {
                     listLinie.get(listLinie.size() - 1).setVisibility(View.GONE);
                     listLinie.remove(listLinie.size() - 1);
-//                    pilka.setX(imageView.getLeft() + imageView.getWidth()/4);
-//                    pilka.setY(imageView.getTop() + imageView.getHeight()/4);
-//                    pilka.bringToFront();
-//                    pilka.invalidate();
-                    canDelete = false;
+
                     playerAccepted = true;
                 }
             }
     }
 
-    public boolean clickAcceptMove(View v)
+    public synchronized boolean clickAcceptMove(View v)
     {
+        if ((_source == null) || (_destination == null))
+            return false;
+
+        int[][] srcShots = listFields.get(_source.getId()).getShots();
+        int[][] dstShots = listFields.get(_destination.getId()).getShots();
+        int[][] srcLastShot = listFields.get(_source.getId()).getLastShot();
+        int[][] dstLastShot = listFields.get(_destination.getId()).getLastShot();
+
+        _source = _destination;
+
         if (playerAccepted)
-            Toast.makeText(this,"Najpierw należy wykonać ruch", Toast.LENGTH_LONG).show();
+        {
+            if (toast != null)
+                toast.cancel();
+           toast = Toast.makeText(this,"Najpierw należy wykonać ruch", Toast.LENGTH_SHORT);
+           toast.show();
+        }
+
         else
         {
-            checkIfGameOver(countPossibleMoves(), _destination.getId());
+            if (toast != null)
+                toast.cancel();
 
             playerAccepted = true;
 
-            //listFields.get(_source.getId()).setShots(listFields.get(_source.getId()).getLastShot());
-           // listFields.get(_destination.getId()).setShots(listFields.get(_destination.getId()).getLastShot());
-
-            int[][] srcShots = listFields.get(_source.getId()).getShots();
-            int[][] dstShots = listFields.get(_destination.getId()).getShots();
-            int[][] srcLastShot = listFields.get(_source.getId()).getLastShot();
-            int[][] dstLastShot = listFields.get(_destination.getId()).getLastShot();
+            checkIfGameOver(countPossibleMoves(), _destination.getId());
 
             for (int i = 0; i<srcShots.length;i++)
                 for(int j = 0; j<srcShots.length;j++)
@@ -302,10 +396,6 @@ public class Game extends AppCompatActivity {
                     if (dstLastShot[i][j] == 1)
                         dstShots[i][j] = 1;
                 }
-
-
-            _source = _destination;
-
 
             if (player1.isAdditionalMove())
             {
@@ -324,7 +414,6 @@ public class Game extends AppCompatActivity {
             }
             whoMoves();
         }
-
         return playerAccepted;
     }
 
@@ -337,31 +426,16 @@ public class Game extends AppCompatActivity {
     }
     public void whoMoves()
     {
-        TextView tv = (TextView) findViewById(R.id.textView2);
+        TextView tv = (TextView) findViewById(R.id.tvWhoMoves);
         if (player1.isMove())
             tv.setText("Ruch gracza, " + player1.getName());
         else
             tv.setText("Ruch gracza, " + player2.getName());
     }
-    public void clickWyczysc()
-    {
-        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
-        ImageView iv = new ImageView(this);
-        // for (ImageView image: listLinie)
-        if (listLinie.size()>40)
-        {
-            iv = listLinie.get(listLinie.size() - 1);
-            iv.setVisibility(View.GONE);
-            listLinie.remove(listLinie.size() - 1);
-            iv = listLinie.get(listLinie.size() - 1);
-            _lastDestination = iv;
-        }
-        else
-            Toast.makeText(this, "Nie mozna wrocic bardziej", Toast.LENGTH_SHORT).show();
-    }
 
     public boolean checkIfShotPossible(ImageView source, ImageView destination) // TODO przerobic cale na switch case
     {
+
         int[][] srcShots = listFields.get(source.getId()).getShots();
         int[][] dstShots = listFields.get(destination.getId()).getShots();
 
@@ -370,8 +444,6 @@ public class Game extends AppCompatActivity {
         for (int i=0;i<srcShots.length;i++)
             for(int j=0;j<srcShots.length;j++)
                 srcLastShot[i][j] = dstLastShot[i][j] = 0;
-//        int[][] srcLastShot = listFields.get(source.getId()).getLastShot();
-//        int[][] dstLastShot = listFields.get(destination.getId()).getLastShot();
 
         int possibleMoves = 0;
         boolean additionalMove = false;
@@ -383,13 +455,7 @@ public class Game extends AppCompatActivity {
                     additionalMove = true;
                 else
                     possibleMoves++;
-//                if (additionalMove) break;
         }
-
-//        for (int i=0;i<srcShots.length;i++)
-//            for (int j=0;j<srcShots.length;j++)
-//                if (srcShots[i][j] == 0)
-//                    possibleMoves ++;
 
         if (possibleMoves < 2) return false;
 
@@ -451,7 +517,7 @@ public class Game extends AppCompatActivity {
                     dstLastShot[2][0] = 1;
                     break;
                 case 10:
-                    if ((srcLastShot[2][0] == 1) || (dstLastShot[0][2] == 1))
+                    if ((srcShots[2][0] == 1) || (dstShots[0][2] == 1))
                         return false;
                     srcLastShot[2][0] = 1;
                     dstLastShot[0][2] = 1;
@@ -478,14 +544,11 @@ public class Game extends AppCompatActivity {
         Log.d("ShotsSrc", String.valueOf(srcShots[0][0]) + " " + String.valueOf(srcShots[0][1]) + " " +String.valueOf(srcShots[0][2]) + " " +String.valueOf(srcShots[1][0]) + " " +String.valueOf(srcShots[1][1]) + " " +String.valueOf(srcShots[1][2]) + " " +String.valueOf(srcShots[2][0]) + " " +String.valueOf(srcShots[2][1]) + " " +String.valueOf(srcShots[2][2]));
         Log.d("ShotsDst", String.valueOf(dstShots[0][0]) + " " + String.valueOf(dstShots[0][1]) + " " +String.valueOf(dstShots[0][2]) + " " +String.valueOf(dstShots[1][0]) + " " +String.valueOf(dstShots[1][1]) + " " +String.valueOf(dstShots[1][2]) + " " +String.valueOf(dstShots[2][0]) + " " +String.valueOf(dstShots[2][1]) + " " +String.valueOf(dstShots[2][2]));
 
-
-        //checkIfGameOver(possibleMoves, destination.getId());
-
         return true;
     }
 
-    public void checkIfGameOver(int possibleMoves, int fieldId) // TODO poprawic wyswietlanie bramek bo jakies cuda sie dziejo
-    {                                                               // TODO dodac przycisk akceptujacy ruch
+    public void checkIfGameOver(int possibleMoves, int fieldId)
+    {
         int[] p2Goal  = {4, 5, 6};
         int[] p1Goal = {138, 137, 136};
 
@@ -516,16 +579,11 @@ public class Game extends AppCompatActivity {
 
 
         Intent intent = new Intent(this, GameOver.class);
-//        intent.putExtra("movep1", player1.isMove());
-//        intent.putExtra("movep2", player2.isMove());
-//        intent.putExtra("isGoal", isGoal);
-//        intent.putExtra("isOwnGoal", isOwnGoal);
 
         if (player1.isMove())
         {
             if (isOwnGoal)
             {
-               // Toast.makeText(this, "Bramka samobójcza, wygrywa Gracz 2", Toast.LENGTH_LONG).show();
                 intent.putExtra("goal", 1);
                 intent.putExtra("winner", player2.getName());
                 startActivity(intent);
@@ -533,7 +591,6 @@ public class Game extends AppCompatActivity {
 
             else if (isGoal)
             {
-               // Toast.makeText(this, "Wygrywa Gracz 1", Toast.LENGTH_LONG).show();
                 intent.putExtra("goal", 2);
                 intent.putExtra("winner", player1.getName());
                 startActivity(intent);
@@ -543,7 +600,6 @@ public class Game extends AppCompatActivity {
         else if (player2.isMove())
             if (isOwnGoal)
             {
-               // Toast.makeText(this, "Bramka samobójcza, wygrywa Gracz 1", Toast.LENGTH_LONG).show();
                 intent.putExtra("goal", 3);
                 intent.putExtra("winner", player1.getName());
                 startActivity(intent);
@@ -551,7 +607,6 @@ public class Game extends AppCompatActivity {
 
             else if (isGoal)
             {
-                //Toast.makeText(this, "Wygrywa Gracz 2", Toast.LENGTH_LONG).show();
                 intent.putExtra("goal", 4);
                 intent.putExtra("winner", player2.getName());
                 startActivity(intent);
@@ -560,50 +615,35 @@ public class Game extends AppCompatActivity {
 
         if (possibleMoves <= 2)
         {
-            final TextView tv = (TextView) findViewById(R.id.textView2);
             if (player1.isMove())
             {
-
-//                Toast.makeText(this, "Wygrywa Gracz 2", Toast.LENGTH_LONG).show();
-               // tv.setText("Wygrywa Gracz 2");
                 intent.putExtra("goal", 4);
                 intent.putExtra("winner", player2.getName());
                 startActivity(intent);
-            }else
+            } else
             {
-
-//                Toast.makeText(this, "Wygrywa Gracz 1", Toast.LENGTH_LONG).show();
-               // tv.setText("Wygrywa Gracz 1");
                 intent.putExtra("goal", 2);
                 intent.putExtra("winner", player1.getName());
                 startActivity(intent);
             }
-
-
-
-            //this.finish();
-            // return false; // TODO activity konczace gre !!!
         }
     }
 
-    public boolean rysujLinie(ImageView source, ImageView destination) // TODO poprawic wyswietlanie linii
+    public boolean rysujLinie(ImageView source, ImageView destination) // TODO wyswietlanie linii na innej rozdzialce,
     {
         Line line = new Line(this);
-        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
-        //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX + 15, _source.getWidth()); // szer ; dl
+
         if (line.createLine(source, destination) && (checkIfShotPossible(source, destination)))
         {
             if (canDelete)
-                deleteLastLine(_destination);
-            // params.leftMargin = ((int) line.getFx() < (int) line.getSx()) ? (int) line.getFx() : (int) line.getSx();
-           // params.topMargin = ((int) line.getFy() < (int) line.getSy()) ? (int) line.getFy(): (int) line.getSy();
+            {
+                deleteLastLine();
+                canDelete = false;
+            }
+
             listLinie.add(line);
             lay.addView(line, line.getParams());
             lay.invalidate();
-
-           // Log.d("COORDS", "fx: " + line.getFx() + " fy: " + line.getFy() + " sx: " + line.getSx() + " sy: " + line.getSy());
-//            Log.d("ShotsSrc", String.valueOf(srcShots[0][0]) + " " + String.valueOf(srcShots[0][1]) + " " +String.valueOf(srcShots[0][2]) + " " +String.valueOf(srcShots[1][0]) + " " +String.valueOf(srcShots[1][1]) + " " +String.valueOf(srcShots[1][2]) + " " +String.valueOf(srcShots[2][0]) + " " +String.valueOf(srcShots[2][1]) + " " +String.valueOf(srcShots[2][2]));
-//            Log.d("ShotsDst", String.valueOf(dstShots[0][0]) + " " + String.valueOf(dstShots[0][1]) + " " +String.valueOf(dstShots[0][2]) + " " +String.valueOf(dstShots[1][0]) + " " +String.valueOf(dstShots[1][1]) + " " +String.valueOf(dstShots[1][2]) + " " +String.valueOf(dstShots[2][0]) + " " +String.valueOf(dstShots[2][1]) + " " +String.valueOf(dstShots[2][2]));
 
             return true;
         }
@@ -667,7 +707,7 @@ public class Game extends AppCompatActivity {
             else if (i == 17)
                 tmpShots[0][1] = tmpShots[0][2] = tmpShots[1][2] = 1;
             else
-                tmpShots[0][0] = tmpShots[0][1] = tmpShots[0][2] = tmpShots[1][2] = tmpShots[1][1] = 1;
+                tmpShots[0][0] = tmpShots[0][1] = tmpShots[0][2] = tmpShots[1][2] = tmpShots[1][0] = 1;
             listFields.get(i).setShots(tmpShots);
         }
 
@@ -679,7 +719,7 @@ public class Game extends AppCompatActivity {
             else if (i == 127)
                 tmpShots[2][1] = tmpShots[2][2] = tmpShots[1][2] = 1;
             else
-                tmpShots[2][0] = tmpShots[2][1] = tmpShots[2][2] = tmpShots[1][2] = tmpShots[1][1] = 1;
+                tmpShots[2][0] = tmpShots[2][1] = tmpShots[2][2] = tmpShots[1][2] = tmpShots[1][0] = 1;
             listFields.get(i).setShots(tmpShots);
         }
     }

@@ -19,6 +19,8 @@ public class GameModes extends AppCompatActivity{
     private Player player1 = new Player();
     private Player player2 = new Player();
 
+    private AlertDialog dialog = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +38,16 @@ public class GameModes extends AppCompatActivity{
 
     public void clickPlayLocal(View v)
     {
+       //Bundle extras = new Bundle();
+        Intent i = getIntent();
+        Options options = i.getParcelableExtra("parcel_options");
+
+
         final Intent intent = new Intent(this, Game.class);
+
+        if (options != null)
+            intent.putExtra("parcel_options", options);
+
         intent.putExtra("mode", 0);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -57,6 +68,7 @@ public class GameModes extends AppCompatActivity{
                         Toast.makeText(getApplicationContext(), "Nie używaj białych znaków", Toast.LENGTH_LONG).show();
                     else
                     {
+                        dialog.dismiss();
                         intent.putExtra("p1Name", p1Name.getText().toString());
                         intent.putExtra("p2Name", p2Name.getText().toString());
                         startActivity(intent);
@@ -64,6 +76,7 @@ public class GameModes extends AppCompatActivity{
                 }
                 else
                 {
+                    dialog.dismiss();
                     intent.putExtra("p1Name", "Gracz 1");
                     intent.putExtra("p2Name", "Gracz 2");
                     startActivity(intent);
@@ -73,8 +86,8 @@ public class GameModes extends AppCompatActivity{
         });
 
         builder.setView(mView);
-        AlertDialog dialog = builder.create();
+        dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
-
     }
 }

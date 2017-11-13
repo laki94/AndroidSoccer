@@ -3,6 +3,7 @@ package test.pkantor.soccer1;
 import android.content.Context;
 import android.media.Image;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -19,11 +20,24 @@ import static java.lang.Math.sqrt;
 
 public class Line extends android.support.v7.widget.AppCompatImageView {
 
+
+    private int devWidth;
+    private int devHeight;
+    private int width;
+    private int height;
     private float fx;
     private float sx;
     private float fy;
     private float sy;
     private FrameLayout.LayoutParams params;
+
+    public void calculateScreenParams()
+    {
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+
+        devHeight = displayMetrics.heightPixels;
+        devWidth = displayMetrics.widthPixels;
+    }
 
     public FrameLayout.LayoutParams getParams() {
         return params;
@@ -52,6 +66,7 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
     public Line(Context context) {
         super(context);
         this.setImageResource(R.drawable.linia);
+        calculateScreenParams();
 //        this.params = new FrameLayout.LayoutParams();
     }
 
@@ -63,6 +78,24 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
         super(context, attrs, defStyleAttr);
     }
 
+    public boolean canCreateLine(ImageView src, ImageView dst)
+    {
+        fx = src.getX();
+        fy = src.getY();
+        sx = dst.getX();
+        sy = dst.getY();
+
+        if ((abs(fx - sx) > src.getWidth()) || (abs(fy - sy) > src.getHeight()))
+        {
+//            Toast.makeText(getContext(), "Zbyt dlugi ruch", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        else if (src.equals(dst))
+            return false;
+
+        return true;
+    }
+
     public boolean createLine(ImageView src, ImageView dst)
     {
         fx = src.getX();
@@ -70,19 +103,21 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
         sx = dst.getX();
         sy = dst.getY();
 
-        params = new FrameLayout.LayoutParams(13,100);
+        width = round(devWidth / 11);
+        height = round(devHeight / 130);
+
+        params = new FrameLayout.LayoutParams(height, width); // 13 100
         this.setScaleType(ScaleType.CENTER_CROP);
-        if ((abs(fx - sx) > src.getWidth()) || (abs(fy - sy) > src.getHeight()))
-        {
-            Toast.makeText(getContext(), "Zbyt dlugi ruch", Toast.LENGTH_LONG).show();
-            return false;
+        if (canCreateLine(src, dst)) {
+            if ((fx == sx) && (fy != sy))
+                return createVerticalLine(src);
+            else if ((fy == sy) && (fx != sx))
+                return createHorizontalLine(src);
+            else
+                return createDiagonalLine(src);
         }
-        else if ((fx == sx) && (fy != sy))
-            return createVerticalLine(src);
-        else if ((fy == sy) && (fx != sx))
-            return createHorizontalLine(src);
         else
-            return createDiagonalLine(src);
+            return false;
     }
 
     public boolean createVerticalLine(ImageView iv)
@@ -146,10 +181,15 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
         }
 
         int skos = (int) sqrt(pow(iv.getWidth(), 2) + pow(iv.getHeight(), 2));
-        fx += iv.getWidth() - 1;
-        sx += iv.getWidth() - 1;
-        fy += iv.getHeight() / 3 - 4;
-        sy += iv.getHeight() / 3 - 4;
+
+        int blad = (skos + 4 - width) / 9;
+
+        fx += iv.getWidth() - blad; // TODO dokonczyc wyswietlanie linii chyba cos bedzie w (skos - szerokosc linii / 2)
+        sx += iv.getWidth() - blad;
+        fy += (iv.getHeight() / 3) - blad;
+        sy += (iv.getHeight() / 3) - blad;
+
+
 //        fy += iv.getHeight() / 2 - 19;
 //        sy += iv.getHeight() / 2 - 19;
 
