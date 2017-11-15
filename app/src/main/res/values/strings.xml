@@ -15,5 +15,6 @@
     <string name="bOptions">Opcje</string>
     <string name="bQuit">Wyjdź</string>
     <string name="cbShowAcceptMove">Przycisk akceptacji ruchu</string>
+    <string name="cbShowPlayers">Nazwy graczy</string>
 
 </resources>

@@ -36,6 +36,12 @@ public class GameModes extends AppCompatActivity{
         return dialog;
     }
 
+    public void clickPlayBluetooth(View v)
+    {
+        Intent intent = new Intent(this, BluetoothConnection.class);
+        startActivity(intent);
+    }
+
     public void clickPlayLocal(View v)
     {
        //Bundle extras = new Bundle();

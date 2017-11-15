@@ -18,13 +18,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import static java.lang.Math.round;
 import static test.pkantor.soccer1.R.layout.activity_game;
 import static test.pkantor.soccer1.R.layout.activity_menu;
 
-
+// TODO dodac znikanie i pokazywanie nazw graczy w zaleznosci od opcji
 public class Game extends AppCompatActivity {
 
     FrameLayout lay;
@@ -38,6 +42,7 @@ public class Game extends AppCompatActivity {
     boolean playerAccepted = true;
     boolean canDelete = false;
     boolean doShowAcceptButton = true;
+    boolean doShowPlayerNames = true;
     ImageView _source;
     ImageView _destination;
     ImageView _lastDestination;
@@ -52,6 +57,7 @@ public class Game extends AppCompatActivity {
 
     Button acceptMove;
     CheckBox cbAcceptMove = null;
+    CheckBox cbShowNames = null;
 
     @Override
     public void onBackPressed()
@@ -89,15 +95,14 @@ public class Game extends AppCompatActivity {
 
     public void prepareDrawer()
     {
-        // TODO
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navView); // TODO zrobic zeby checkbox dzialal
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.layDrawer);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navView);
         navigationView.bringToFront();
         android.view.Menu menu = navigationView.getMenu();
 
-        final MenuItem menuItem = menu.findItem(R.id.nav_AcceptMove);
+        final MenuItem iAcceptMove = menu.findItem(R.id.nav_AcceptMove);
+        final MenuItem iShowNames = menu.findItem(R.id.nav_ShowPlayers);
 
-        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        iAcceptMove.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 CheckBox cb = (CheckBox) item.getActionView();
@@ -106,19 +111,49 @@ public class Game extends AppCompatActivity {
             }
         });
 
-        cbAcceptMove = (CheckBox) menuItem.getActionView();
+        iShowNames.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                CheckBox cb = (CheckBox) item.getActionView();
+                cb.setChecked(!cb.isChecked());
+                return false;
+            }
+        });
+
+        cbAcceptMove = (CheckBox) iAcceptMove.getActionView();
+        cbShowNames = (CheckBox) iShowNames.getActionView();
+
         cbAcceptMove.setChecked(true);
+        cbShowNames.setChecked(true);
+
         cbAcceptMove.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 doShowAcceptButton = isChecked;
                 if (!isChecked)
-                {
                     acceptMove.setVisibility(View.INVISIBLE);
+                else
+                    acceptMove.setVisibility(View.VISIBLE);
+            }
+        });
+
+        cbShowNames.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                doShowPlayerNames = isChecked;
+                TextView tvPlayer1 = (TextView) findViewById(R.id.tvPlayer1);
+                TextView tvPlayer2 = (TextView) findViewById(R.id.tvPlayer2);
+
+                if (!isChecked)
+                {
+                    tvPlayer1.setVisibility(View.INVISIBLE);
+                    tvPlayer2.setVisibility(View.INVISIBLE);
                 }
+
                 else
                 {
-                    acceptMove.setVisibility(View.VISIBLE);
+                    tvPlayer1.setVisibility(View.VISIBLE);
+                    tvPlayer2.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -295,6 +330,35 @@ public class Game extends AppCompatActivity {
         g2.setX(countX * 7);
         g2.setY((countX * 1) - countX / 2) ;
 
+        android.support.v7.widget.Toolbar tb = (android.support.v7.widget.Toolbar) findViewById(R.id.tbGame);
+        TextView tbTitle = (TextView) tb.findViewById(R.id.tv_tbTitle);
+        //TextView tbSubtitle = (TextView) tb.findViewById(R.id.tv_tbSubtitle);
+        tb.setTitle(player1.getName() + " " + player1.getPoints() + " : " + player2.getPoints() + " " + player2.getName());
+        //tb.setSubtitle(player1.getPoints() + " : " + player2.getPoints());
+
+        setSupportActionBar(tb);
+        tbTitle.setText(tb.getTitle());
+        //tbSubtitle.setText(tb.getSubtitle());
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //tb.setSubtitle("0 0");
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem)
+    {
+        if (menuItem.getItemId() == android.R.id.home)
+        {
+            NavigationView nv = (NavigationView) findViewById(R.id.navView);
+            DrawerLayout dr = (DrawerLayout) findViewById(R.id.layDrawer);
+            if (dr.isDrawerOpen(nv))
+                dr.closeDrawer(nv);
+            else
+                dr.openDrawer(nv);
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     public boolean tryToCreateLine(ImageView src, ImageView dst)

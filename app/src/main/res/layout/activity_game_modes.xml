@@ -30,6 +30,7 @@
         android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:text="@string/buttonPlayBluetooth"
+        android:onClick="clickPlayBluetooth"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

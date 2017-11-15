@@ -5,5 +5,9 @@
         android:id="@+id/nav_AcceptMove"
         android:title="@string/cbShowAcceptMove"
         app:actionViewClass="android.widget.CheckBox"/>
+    <item
+        android:id="@+id/nav_ShowPlayers"
+        android:title="@string/cbShowPlayers"
+        app:actionViewClass="android.widget.CheckBox"/>
 
 </menu>
