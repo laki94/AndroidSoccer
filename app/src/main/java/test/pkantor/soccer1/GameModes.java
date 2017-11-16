@@ -66,27 +66,27 @@ public class GameModes extends AppCompatActivity{
             @Override
             public void onClick(View v)
             {
-                if ((!p1Name.getText().toString().isEmpty()) && (!p2Name.getText().toString().isEmpty()))
-                {
-                    if ((p1Name.getText().length() > 8) || (p2Name.getText().length() > 8))
-                        Toast.makeText(getApplicationContext(), "Nazwa gracza nie może przekraczać 8 znaków", Toast.LENGTH_LONG).show();
+//                if ((!p1Name.getText().toString().isEmpty()) && (!p2Name.getText().toString().isEmpty()))
+//                {
+                    if ((p1Name.getText().length() > 8) || (p2Name.getText().length() > 7))
+                        Toast.makeText(getApplicationContext(), "Nazwa gracza nie może przekraczać 7 znaków", Toast.LENGTH_LONG).show();
                     else if ((p1Name.getText().toString().contains(" ")) || p2Name.getText().toString().contains(" "))
                         Toast.makeText(getApplicationContext(), "Nie używaj białych znaków", Toast.LENGTH_LONG).show();
                     else
                     {
                         dialog.dismiss();
-                        intent.putExtra("p1Name", p1Name.getText().toString());
-                        intent.putExtra("p2Name", p2Name.getText().toString());
+                        if (p1Name.getText().length() != 0)
+                            intent.putExtra("p1Name", p1Name.getText().toString());
+                        else
+                            intent.putExtra("p1Name", "Gracz 1");
+
+                        if (p2Name.getText().length() != 0)
+                            intent.putExtra("p2Name", p2Name.getText().toString());
+                        else
+                            intent.putExtra("p2Name", "Gracz 2");
+
                         startActivity(intent);
                     }
-                }
-                else
-                {
-                    dialog.dismiss();
-                    intent.putExtra("p1Name", "Gracz 1");
-                    intent.putExtra("p2Name", "Gracz 2");
-                    startActivity(intent);
-                }
 //                    Toast.makeText(GameModes.this, "blbelel", Toast.LENGTH_SHORT).show();
             }
         });

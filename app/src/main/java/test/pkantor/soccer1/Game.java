@@ -62,35 +62,39 @@ public class Game extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View mView = getLayoutInflater().inflate(R.layout.activity_dialog_exit, null);
-        builder.setView(mView);
-        final AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(true);
-
-        Button bYes = (Button) mView.findViewById(R.id.bYes);
-        Button bNo = (Button) mView.findViewById(R.id.bNo);
-
-        bYes.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        dialog.dismiss();
-                                        finish();
-                                        System.exit(0);
-                                    }
-                                });
-        bNo.setOnClickListener(new View.OnClickListener()
+        DrawerLayout dr = (DrawerLayout) findViewById(R.id.layDrawer);
+        NavigationView nv = (NavigationView) dr.findViewById(R.id.navView);
+        if (dr.isDrawerOpen(nv))
+            dr.closeDrawer(nv);
+        else
         {
-            @Override
-            public void onClick(View v)
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View mView = getLayoutInflater().inflate(R.layout.activity_dialog_exit, null);
+            builder.setView(mView);
+            final AlertDialog dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(true);
+
+            Button bYes = (Button) mView.findViewById(R.id.bYes);
+            Button bNo = (Button) mView.findViewById(R.id.bNo);
+
+            bYes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                    finish();
+                    System.exit(0);
+                }
+            });
+            bNo.setOnClickListener(new View.OnClickListener()
             {
-                dialog.dismiss();
-            }
-        });
-
-
-        dialog.show();
-
+                @Override
+                public void onClick(View v)
+                {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
     }
 
     public void prepareDrawer()
@@ -253,7 +257,22 @@ public class Game extends AppCompatActivity {
                             else
                             {
                                 if (checkIfShotPossible(_source, _lastDestination))
+                                {
                                     _destination = _lastDestination;
+                                    if (rysujLinie(_source, _destination))
+                                    {
+                                        canDelete = true;
+                                        playerAccepted = false;
+                                        pilka.setX(_destination.getLeft() + _destination.getWidth()/4);
+                                        pilka.setY(_destination.getTop() + _destination.getHeight()/4);
+                                        pilka.bringToFront();
+                                        pilka.invalidate();
+
+                                        if (!doShowAcceptButton)
+                                            acceptMove.performClick();
+                                    }
+                                }
+
                                 else
                                 {
                                     if (toast != null)
@@ -264,20 +283,7 @@ public class Game extends AppCompatActivity {
                             }
 
 
-                            if ((_source != _destination) && (_source != null) && (_destination != null))
-                            {
-                                if (rysujLinie(_source, _destination))
-                                {
-                                    canDelete = true;
-                                    playerAccepted = false;
-                                    pilka.setX(_destination.getLeft() + _destination.getWidth()/4);
-                                    pilka.setY(_destination.getTop() + _destination.getHeight()/4);
-                                    pilka.bringToFront();
-                                    pilka.invalidate();
-                                }
-                            }
-                            if (!doShowAcceptButton)
-                                acceptMove.performClick();
+
                             return true;
                         case MotionEvent.ACTION_UP:
                             Log.d("UP","" + pol.getId());
@@ -313,8 +319,10 @@ public class Game extends AppCompatActivity {
         }
         else
         {
-            player1.setName("Gracz 1");
-            player2.setName("Gracz 2");
+//            if (player1.getName().equals(""))
+                player1.setName("Gracz 1");
+//            if (player2.getName().equals(""))
+                player2.setName("Gracz 2");
         }
 
         g1.bringToFront();
@@ -696,6 +704,9 @@ public class Game extends AppCompatActivity {
     public boolean rysujLinie(ImageView source, ImageView destination) // TODO wyswietlanie linii na innej rozdzialce,
     {
         Line line = new Line(this);
+
+        if ((source == destination) || (source == null) || (destination == null))
+            return false;
 
         if (line.createLine(source, destination) && (checkIfShotPossible(source, destination)))
         {
