@@ -174,10 +174,6 @@ public class Game extends AppCompatActivity {
 
         prepareDrawer();
 
-
-
-
-
 //        cbAcceptMove = (CheckBox) header.findViewById(R.id.nav_AcceptMove);
 
 //

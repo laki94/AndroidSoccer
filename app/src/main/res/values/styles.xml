@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ToolbarColoredBackArrow" parent="AppTheme">
+        <item name="homeAsUpIndicator">@drawable/menuicon</item>
+        <!--<item name="android:textColorSecondary">@color/colorWhite</item>-->
+    </style>
+
 </resources>
