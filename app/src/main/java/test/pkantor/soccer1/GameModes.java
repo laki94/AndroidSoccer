@@ -2,16 +2,14 @@ package test.pkantor.soccer1;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 public class GameModes extends AppCompatActivity{
@@ -38,7 +36,7 @@ public class GameModes extends AppCompatActivity{
 
     public void clickPlayBluetooth(View v)
     {
-        Intent intent = new Intent(this, BluetoothConnection.class);
+        Intent intent = new Intent(this, BluetoothService.class);
         startActivity(intent);
     }
 
@@ -61,6 +59,11 @@ public class GameModes extends AppCompatActivity{
         final EditText p1Name = (EditText) mView.findViewById(R.id.etFirstPlayerName);
         final EditText p2Name = (EditText) mView.findViewById(R.id.etSecondPlayerName);
         Button saveNames = (Button) mView.findViewById(R.id.bSaveNames);
+
+        final NumberPicker np = (NumberPicker) mView.findViewById(R.id.np);
+        np.setMinValue(1);
+        np.setMaxValue(9);
+        np.setWrapSelectorWheel(true);
 
         saveNames.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -85,6 +88,7 @@ public class GameModes extends AppCompatActivity{
                         else
                             intent.putExtra("p2Name", "Gracz 2");
 
+                        intent.putExtra("goalPoints", np.getValue());
                         startActivity(intent);
                     }
 //                    Toast.makeText(GameModes.this, "blbelel", Toast.LENGTH_SHORT).show();
@@ -95,5 +99,11 @@ public class GameModes extends AppCompatActivity{
         dialog = builder.create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
+    }
+
+    public void clickPlayNet(View v)
+    {
+        Intent intent = new Intent(this, BluetoothConnection.class);
+        startActivity(intent);
     }
 }

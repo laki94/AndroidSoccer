@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="test.pkantor.soccer1">
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:allowBackup="true"
@@ -24,9 +25,8 @@
             android:screenOrientation="portrait" />
         <activity android:name=".GameOver" />
         <activity android:name=".GameModes" />
-        <activity android:name="com.example.pawel.test_1.BluetoothConnection" />
-        <activity android:name="com.example.pawel.test_1.bluetoothConnection" />
-        <activity android:name=".BluetoothConnection"></activity>
+        <activity android:name=".BluetoothConnection" />
+        <activity android:name=".BluetoothService" />
     </application>
 
 </manifest>

@@ -8,10 +8,11 @@
 
     <TextView
         android:id="@+id/tvFirstPlayerName"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
+        android:layout_gravity="center_horizontal"
         android:text="@string/firstPlayerName"
         android:textColor="@color/colorBlack"
         android:textSize="18sp" />
@@ -23,6 +24,7 @@
         android:layout_weight="1"
         android:ems="10"
         android:gravity="center"
+        android:layout_gravity="center_horizontal"
         android:hint="Gracz 1"
         android:inputType="textPersonName" />
 
@@ -32,6 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
+        android:layout_gravity="center_horizontal"
         android:text="@string/secondPlayerName"
         android:textSize="18sp"
         android:textColor="@color/colorBlack" />
@@ -43,8 +46,27 @@
         android:layout_weight="1"
         android:ems="10"
         android:gravity="center"
+        android:layout_gravity="center_horizontal"
         android:hint="Gracz 2"
         android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/tvGoalPoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/pl_tvGoalPoints"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:textSize="18sp"
+        android:textColor="@color/colorBlack" />
+
+    <NumberPicker
+        android:id="@+id/np"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"/>
 
     <Button
         android:id="@+id/bSaveNames"

@@ -1,5 +1,6 @@
 package test.pkantor.soccer1;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Handler;
@@ -28,7 +29,6 @@ import static java.lang.Math.round;
 import static test.pkantor.soccer1.R.layout.activity_game;
 import static test.pkantor.soccer1.R.layout.activity_menu;
 
-// TODO dodac znikanie i pokazywanie nazw graczy w zaleznosci od opcji
 public class Game extends AppCompatActivity {
 
     FrameLayout lay;
@@ -39,10 +39,13 @@ public class Game extends AppCompatActivity {
     int top = 0;
     int countX;
     int countY;
+    int goalPointsToWin;
     boolean playerAccepted = true;
     boolean canDelete = false;
     boolean doShowAcceptButton = true;
     boolean doShowPlayerNames = true;
+    boolean newGame = false;
+
     ImageView _source;
     ImageView _destination;
     ImageView _lastDestination;
@@ -167,6 +170,9 @@ public class Game extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(activity_game);
 
         TextView g1 = (TextView) findViewById(R.id.tvPlayer1);
@@ -245,9 +251,12 @@ public class Game extends AppCompatActivity {
                                 {
                                     if (toast != null)
                                         toast.cancel();
-                                    _lastDestination = _destination;
-                                    toast = Toast.makeText(getApplicationContext(), "Zbyt dlugi ruch", Toast.LENGTH_LONG);
+                                    if (_lastDestination == _source)
+                                        toast = Toast.makeText(getApplicationContext(), "Wcisnij pole swojego następnego ruchu", Toast.LENGTH_LONG);
+                                    else
+                                        toast = Toast.makeText(getApplicationContext(), "Zbyt dlugi ruch", Toast.LENGTH_LONG);
                                     toast.show();
+                                    _lastDestination = _destination;
                                 }
                             }
                             else
@@ -266,6 +275,9 @@ public class Game extends AppCompatActivity {
 
                                         if (!doShowAcceptButton)
                                             acceptMove.performClick();
+
+                                        if (newGame)
+                                            startNewGame();
                                     }
                                 }
 
@@ -312,6 +324,7 @@ public class Game extends AppCompatActivity {
         {
             player1.setName(extras.getString("p1Name"));
             player2.setName(extras.getString("p2Name"));
+            goalPointsToWin = extras.getInt("goalPoints");
         }
         else
         {
@@ -319,6 +332,7 @@ public class Game extends AppCompatActivity {
                 player1.setName("Gracz 1");
 //            if (player2.getName().equals(""))
                 player2.setName("Gracz 2");
+                goalPointsToWin = 1;
         }
 
         g1.bringToFront();
@@ -363,6 +377,26 @@ public class Game extends AppCompatActivity {
                 dr.openDrawer(nv);
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    public void startNewGame()
+    {
+//        listLinie.clear();
+//        for (int i = listLinie.size(); i > 40; i++) // TODO exception w onTouch ?
+//        {
+//          //  listLinie.get(40 + i).setVisibility(View.GONE);
+//           // listLinie.remove(i);
+//        }
+
+
+        for (Field field: listFields)
+            field.initializeShots();
+
+        blockMoveOutsideField();
+        _source = listViews.get(71);
+        pilka.setX(_source.getLeft() + _source.getWidth() / 4);
+        pilka.setY(_source.getTop() + _source.getHeight() / 4);
+
     }
 
     public boolean tryToCreateLine(ImageView src, ImageView dst)
@@ -429,16 +463,6 @@ public class Game extends AppCompatActivity {
 
     public synchronized boolean clickAcceptMove(View v)
     {
-        if ((_source == null) || (_destination == null))
-            return false;
-
-        int[][] srcShots = listFields.get(_source.getId()).getShots();
-        int[][] dstShots = listFields.get(_destination.getId()).getShots();
-        int[][] srcLastShot = listFields.get(_source.getId()).getLastShot();
-        int[][] dstLastShot = listFields.get(_destination.getId()).getLastShot();
-
-        _source = _destination;
-
         if (playerAccepted)
         {
             if (toast != null)
@@ -449,38 +473,51 @@ public class Game extends AppCompatActivity {
 
         else
         {
+            if ((_source == null) || (_destination == null))
+                return false;
+
+            int[][] srcShots = listFields.get(_source.getId()).getShots();
+            int[][] dstShots = listFields.get(_destination.getId()).getShots();
+            int[][] srcLastShot = listFields.get(_source.getId()).getLastShot();
+            int[][] dstLastShot = listFields.get(_destination.getId()).getLastShot();
+
+            _source = _destination;
+
             if (toast != null)
                 toast.cancel();
 
             playerAccepted = true;
 
-            checkIfGameOver(countPossibleMoves(), _destination.getId());
+            newGame = checkIfGameOver(countPossibleMoves(), _destination.getId());
 
-            for (int i = 0; i<srcShots.length;i++)
-                for(int j = 0; j<srcShots.length;j++)
+            if (!newGame)
+            {
+                for (int i = 0; i<srcShots.length;i++)
+                    for(int j = 0; j<srcShots.length;j++)
+                    {
+                        if (srcLastShot[i][j] == 1)
+                            srcShots[i][j] = 1;
+                        if (dstLastShot[i][j] == 1)
+                            dstShots[i][j] = 1;
+                    }
+
+                if (player1.isAdditionalMove())
                 {
-                    if (srcLastShot[i][j] == 1)
-                        srcShots[i][j] = 1;
-                    if (dstLastShot[i][j] == 1)
-                        dstShots[i][j] = 1;
+                    player1.setMove(true);
+                    player2.setMove(!player1.isMove());
                 }
-
-            if (player1.isAdditionalMove())
-            {
-                player1.setMove(true);
-                player2.setMove(!player1.isMove());
+                else if (player2.isAdditionalMove())
+                {
+                    player2.setMove(true);
+                    player1.setMove(!player2.isMove());
+                }
+                else
+                {
+                    player1.setMove(player2.isMove());
+                    player2.setMove(!player1.isMove());
+                }
+                whoMoves();
             }
-            else if (player2.isAdditionalMove())
-            {
-                player2.setMove(true);
-                player1.setMove(!player2.isMove());
-            }
-            else
-            {
-                player1.setMove(player2.isMove());
-                player2.setMove(!player1.isMove());
-            }
-            whoMoves();
         }
         return playerAccepted;
     }
@@ -615,7 +652,7 @@ public class Game extends AppCompatActivity {
         return true;
     }
 
-    public void checkIfGameOver(int possibleMoves, int fieldId)
+    public boolean checkIfGameOver(int possibleMoves, int fieldId)
     {
         int[] p2Goal  = {4, 5, 6};
         int[] p1Goal = {138, 137, 136};
@@ -652,49 +689,108 @@ public class Game extends AppCompatActivity {
         {
             if (isOwnGoal)
             {
-                intent.putExtra("goal", 1);
-                intent.putExtra("winner", player2.getName());
-                startActivity(intent);
+                player2.setPoints(player2.getPoints()+1);
+
+                if (player2.getPoints() == goalPointsToWin)
+                {
+                    intent.putExtra("goal", 1);
+                    intent.putExtra("winner", player2.getName());
+                    startActivity(intent);
+                }
+                else
+                {
+
+                    //startNewGame();
+                    player2.setMove(true);
+                    player1.setMove(!player2.isMove());
+                    return true;
+                }
             }
 
             else if (isGoal)
             {
-                intent.putExtra("goal", 2);
-                intent.putExtra("winner", player1.getName());
-                startActivity(intent);
+                player1.setPoints(player1.getPoints() + 1);
+
+                if (player1.getPoints() == goalPointsToWin)
+                {
+                    intent.putExtra("goal", 2);
+                    intent.putExtra("winner", player1.getName());
+                    startActivity(intent);
+                }
+                else
+                {
+                    // TODO NOWA GRA
+                }
             }
 
         }
         else if (player2.isMove())
             if (isOwnGoal)
             {
-                intent.putExtra("goal", 3);
-                intent.putExtra("winner", player1.getName());
-                startActivity(intent);
+                player1.setPoints(player2.getPoints() + 1);
+
+                if (player1.getPoints() == goalPointsToWin)
+                {
+                    intent.putExtra("goal", 3);
+                    intent.putExtra("winner", player1.getName());
+                    startActivity(intent);
+                }
+                else
+                {
+                    // TODO NOWA GRA
+                }
             }
 
             else if (isGoal)
             {
-                intent.putExtra("goal", 4);
-                intent.putExtra("winner", player2.getName());
-                startActivity(intent);
-            }
+                player2.setPoints(player2.getPoints() + 1);
 
+                if (player2.getPoints() == goalPointsToWin)
+                {
+                    intent.putExtra("goal", 4);
+                    intent.putExtra("winner", player2.getName());
+                    startActivity(intent);
+                }
+                else
+                {
+                    // TODO NOWA GRA
+                }
+            }
 
         if (possibleMoves <= 2)
         {
             if (player1.isMove())
             {
-                intent.putExtra("goal", 4);
-                intent.putExtra("winner", player2.getName());
-                startActivity(intent);
+                player2.setPoints(player2.getPoints() + 1);
+
+                if (player2.getPoints() == goalPointsToWin)
+                {
+                    intent.putExtra("goal", 4);
+                    intent.putExtra("winner", player2.getName());
+                    startActivity(intent);
+                }
+                else
+                {
+                    // TODO NOWA GRA
+                }
             } else
             {
-                intent.putExtra("goal", 2);
-                intent.putExtra("winner", player1.getName());
-                startActivity(intent);
+                player1.setPoints(player1.getPoints() + 1);
+
+                if (player1.getPoints() == goalPointsToWin)
+                {
+                    intent.putExtra("goal", 2);
+                    intent.putExtra("winner", player1.getName());
+                    startActivity(intent);
+                }
+                else
+                {
+                    // TODO NOWA GRA
+                }
             }
         }
+
+        return false;
     }
 
     public boolean rysujLinie(ImageView source, ImageView destination) // TODO wyswietlanie linii na innej rozdzialce,
@@ -739,19 +835,15 @@ public class Game extends AppCompatActivity {
 
 
     }
-    public void rysujBoisko()
-    {
-        int[] fieldID = {12, 13, 14, 15, 4, 5, 6, 17, 18, 19, 20, 31, 42, 53, 64, 75, 86, 97, 108, 119, 130, 129, 128, 127, 138, 137, 136, 125, 124, 123, 122, 111, 100, 89, 78, 67, 56, 45, 34, 23, 12};
 
+    public void blockMoveOutsideField()
+    {
         int[] rightSide = {20, 31, 42, 53, 64, 75, 86, 97, 108, 119, 130};
         int[] leftSide = {122, 111, 100, 89, 78, 67, 56, 45, 34, 23, 12};
         int[] upSide = {12, 13, 14, 15, 17, 18, 19, 20, 4, 5, 6};
         int[] downSide = {130, 129, 128, 127, 125, 124, 123, 122, 138, 137, 136};
 
         int[] notClickableField = {0, 1, 2, 3, 7, 8, 9, 10, 11, 21, 22, 32, 33, 43, 44, 54, 55, 65, 66, 76, 77, 87, 88, 98, 99, 109, 110, 120, 121, 131, 132, 133, 134, 135, 139, 140, 141, 142, 143};
-
-        for(int i = 0; i < fieldID.length - 1; i++)
-            rysujLinie(listViews.get(fieldID[i]), listViews.get(fieldID[i+1]));
 
         for (int i=0;i < notClickableField.length - 1; i++)
             listViews.get(notClickableField[i]).setEnabled(false);
@@ -793,6 +885,15 @@ public class Game extends AppCompatActivity {
                 tmpShots[2][0] = tmpShots[2][1] = tmpShots[2][2] = tmpShots[1][2] = tmpShots[1][0] = 1;
             listFields.get(i).setShots(tmpShots);
         }
+    }
+    public void rysujBoisko()
+    {
+        int[] fieldID = {12, 13, 14, 15, 4, 5, 6, 17, 18, 19, 20, 31, 42, 53, 64, 75, 86, 97, 108, 119, 130, 129, 128, 127, 138, 137, 136, 125, 124, 123, 122, 111, 100, 89, 78, 67, 56, 45, 34, 23, 12};
+
+        for(int i = 0; i < fieldID.length - 1; i++)
+            rysujLinie(listViews.get(fieldID[i]), listViews.get(fieldID[i+1]));
+
+        blockMoveOutsideField();
     }
 
 }

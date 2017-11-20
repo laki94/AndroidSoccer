@@ -16,5 +16,6 @@
     <string name="bQuit">Wyjdź</string>
     <string name="cbShowAcceptMove">Przycisk akceptacji ruchu</string>
     <string name="cbShowPlayers">Nazwy graczy</string>
+    <string name="pl_tvGoalPoints">Ilość bramek do zwycięstwa</string>
 
 </resources>

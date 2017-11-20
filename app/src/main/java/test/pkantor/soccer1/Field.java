@@ -48,7 +48,7 @@ public class Field extends android.support.v7.widget.AppCompatImageView{
         this.shots = shots;
     }
 
-    private void initializeShots()
+    public void initializeShots()
     {
         for (int i=0;i<shots.length;i++)
             for(int j=0;j<shots.length;j++)
