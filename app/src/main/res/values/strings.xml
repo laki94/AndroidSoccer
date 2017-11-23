@@ -1,5 +1,11 @@
-<resources>
-    <string name="app_name">Soccer1</string>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+<string name="app_name">Soccer1</string>
+
+    <!-- MultiLanguage -->
+    <string name="score">%1$s %2$d : %3$d %4$s</string>
+
+    <!-- Polish -->
     <string name="firstPlayerName">Podaj nazwę pierwszego gracza</string>
     <string name="secondPlayerName">Podaj nazwę drugiego gracza</string>
     <string name="buttonSave">Zapisz</string>
@@ -17,5 +23,40 @@
     <string name="cbShowAcceptMove">Przycisk akceptacji ruchu</string>
     <string name="cbShowPlayers">Nazwy graczy</string>
     <string name="pl_tvGoalPoints">Ilość bramek do zwycięstwa</string>
+    <string name="pl_bDiscover">Skanuj</string>
+    <string name="pl_bDiscoverable">Włącz wykrywalność</string>
+    <string name="pl_bOnOff">On/Off</string>
+    <string name="pl_bStartConnection">Połącz</string>
+    <string name="pl_WinnerIs">Wygrywa, %1$s</string>
+    <string name="pl_DefaultPlayer1">Gracz 1</string>
+    <string name="pl_DefaultPlayer2">Gracz 2</string>
+    <string name="pl_SelectNextFieldError">Wcisnij pole swojego następnego ruchu</string>
+    <string name="pl_TooLongPassError">Zbyt dlugi ruch</string>
+    <string name="pl_InvalidDirectionError">Ruch w tym kierunku jest niedozwolony</string>
+    <string name="pl_MakeMoveFirstError">Najpierw należy wykonać ruch</string>
+    <string name="pl_WhitespaceError">Nie używaj białych znaków</string>
+    <string name="pl_NameOverMaxEms">Nazwa gracza nie może przekraczać %1$d znaków</string>
+
+    <!--  BluetoothChat -->
+    <string name="send">Send</string>
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+    <string name="title_connecting">connecting...</string>
+    <string name="title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
+    <string name="title_not_connected">not connected</string>
+
+    <!--  DeviceListActivity -->
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
+
+    <!-- Options Menu -->
+    <string name="secure_connect">Connect a device - Secure</string>
+    <string name="insecure_connect">Connect a device - Insecure</string>
+    <string name="discoverable">Make discoverable</string>
 
 </resources>

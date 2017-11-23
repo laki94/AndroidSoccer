@@ -1,6 +1,7 @@
 package test.pkantor.soccer1;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,25 +32,20 @@ public class GameOver extends AppCompatActivity {
         int result = 0;
         String winner = "";
         if (extras != null)
-        {
-            result = extras.getInt("goal");
+
+//            result = extras.getInt("goal");
             winner = extras.getString("winner");
-        }
+
 
         switch (result)
         {
-            case 1:
-                tv.setText("Bramka samobójcza, wygrywa gracz " + winner);
+            case 0:
+                Resources resources = getResources();
+                tv.setText(resources.getString(R.string.pl_WinnerIs, winner));
                 break;
-            case 2:
-                tv.setText("Wygrywa " + winner);
-                break;
-            case 3:
-                tv.setText("Bramka samobójcza, wygrywa gracz " + winner);
-                break;
-            case 4:
-                tv.setText("Wygrywa " + winner);
-                break;
+//            case 1:
+//                tv.setText("Wygrywa " + winner);
+//                break;
             default:
                 tv.setText("Otrzymano nieznana wartość: " + result);
                 break;

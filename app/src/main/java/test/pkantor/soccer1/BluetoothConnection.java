@@ -17,15 +17,25 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class BluetoothConnection extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private static final String TAG = "MainActivity";
 
     BluetoothAdapter mBluetoothAdapter;
+    BluetoothService bluetoothService;
+    private static final UUID UUID_INS = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+
+    BluetoothDevice bluetoothDevice;
     Button btnEnableDisable_Discoverable;
+    Button btnStartConnection;
+    Button btnSend;
+    EditText editText;
 
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
 
@@ -142,6 +152,7 @@ public class BluetoothConnection extends AppCompatActivity implements AdapterVie
                 //case1: bonded already
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED){
                     Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
+                    bluetoothDevice = mDevice;
                 }
                 //case2: creating a bone
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
@@ -177,6 +188,11 @@ public class BluetoothConnection extends AppCompatActivity implements AdapterVie
         lvNewDevices = (ListView) findViewById(R.id.lvNewDevices);
         mBTDevices = new ArrayList<>();
 
+        btnStartConnection = (Button) findViewById(R.id.btnStartConnection);
+        btnSend = (Button) findViewById(R.id.btnSend);
+        editText = (EditText) findViewById(R.id.editText);
+
+
         //Broadcasts when bond state changes (ie:pairing)
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBroadcastReceiver4, filter);
@@ -194,6 +210,31 @@ public class BluetoothConnection extends AppCompatActivity implements AdapterVie
             }
         });
 
+        btnStartConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startConnection();
+            }
+        });
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                byte[] bytes = editText.getText().toString().getBytes(Charset.defaultCharset());
+                bluetoothService.write(bytes);
+            }
+        });
+
+    }
+
+    public void startConnection()
+    {
+        startBTConnection(bluetoothDevice, UUID_INS);
+    }
+
+    public void startBTConnection(BluetoothDevice device, UUID uuid)
+    {
+        bluetoothService.startClient(device, uuid);
     }
 
 
@@ -292,9 +333,12 @@ public class BluetoothConnection extends AppCompatActivity implements AdapterVie
 
         //create the bond.
         //NOTE: Requires API 17+? I think this is JellyBean
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
             Log.d(TAG, "Trying to pair with " + deviceName);
             mBTDevices.get(i).createBond();
+
+            bluetoothDevice = mBTDevices.get(i);
+            bluetoothService = new BluetoothService(BluetoothConnection.this);
         }
     }
 }

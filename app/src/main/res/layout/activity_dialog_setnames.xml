@@ -22,11 +22,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ems="10"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
-        android:hint="Gracz 1"
-        android:inputType="textPersonName" />
+        android:hint="@string/pl_DefaultPlayer1"
+        android:inputType="text|textNoSuggestions"
+        android:maxEms="9"
+        />
 
     <TextView
         android:id="@+id/tvSecondPlayerName"
@@ -44,11 +45,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ems="10"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
-        android:hint="Gracz 2"
-        android:inputType="textPersonName" />
+        android:hint="@string/pl_DefaultPlayer2"
+        android:inputType="text|textNoSuggestions"
+        android:maxEms="9"
+        />
 
     <TextView
         android:id="@+id/tvGoalPoints"

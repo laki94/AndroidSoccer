@@ -1,9 +1,8 @@
 package test.pkantor.soccer1;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.os.Handler;
+import android.content.res.Resources;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -19,15 +18,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 import static java.lang.Math.round;
 import static test.pkantor.soccer1.R.layout.activity_game;
-import static test.pkantor.soccer1.R.layout.activity_menu;
 
 public class Game extends AppCompatActivity {
 
@@ -61,6 +56,10 @@ public class Game extends AppCompatActivity {
     Button acceptMove;
     CheckBox cbAcceptMove = null;
     CheckBox cbShowNames = null;
+    android.support.v7.widget.Toolbar tbHeader;
+    TextView tvScore;
+
+    Resources res;
 
     @Override
     public void onBackPressed()
@@ -177,6 +176,10 @@ public class Game extends AppCompatActivity {
 
         TextView g1 = (TextView) findViewById(R.id.tvPlayer1);
         TextView g2 = (TextView) findViewById(R.id.tvPlayer2);
+        tbHeader = (android.support.v7.widget.Toolbar) findViewById(R.id.tbGame);
+        tvScore = (TextView) tbHeader.findViewById(R.id.tv_tbTitle);
+
+        res = getResources();
 
         prepareDrawer();
 
@@ -214,7 +217,7 @@ public class Game extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
-        int height = displayMetrics.heightPixels;// - 60;
+        int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
         countY = round(height/13);
         countX = round(width/11);
@@ -252,9 +255,9 @@ public class Game extends AppCompatActivity {
                                     if (toast != null)
                                         toast.cancel();
                                     if (_lastDestination == _source)
-                                        toast = Toast.makeText(getApplicationContext(), "Wcisnij pole swojego następnego ruchu", Toast.LENGTH_LONG);
+                                        toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_SelectNextFieldError), Toast.LENGTH_LONG);
                                     else
-                                        toast = Toast.makeText(getApplicationContext(), "Zbyt dlugi ruch", Toast.LENGTH_LONG);
+                                        toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_TooLongPassError), Toast.LENGTH_LONG);
                                     toast.show();
                                     _lastDestination = _destination;
                                 }
@@ -264,7 +267,7 @@ public class Game extends AppCompatActivity {
                                 if (checkIfShotPossible(_source, _lastDestination))
                                 {
                                     _destination = _lastDestination;
-                                    if (rysujLinie(_source, _destination))
+                                    if (drawLine(_source, _destination))
                                     {
                                         canDelete = true;
                                         playerAccepted = false;
@@ -276,8 +279,8 @@ public class Game extends AppCompatActivity {
                                         if (!doShowAcceptButton)
                                             acceptMove.performClick();
 
-                                        if (newGame)
-                                            startNewGame();
+//                                        if (newGame)
+//                                            startNewGame();
                                     }
                                 }
 
@@ -285,7 +288,7 @@ public class Game extends AppCompatActivity {
                                 {
                                     if (toast != null)
                                         toast.cancel();
-                                    toast = Toast.makeText(getApplicationContext(), "Ruch w tym kierunku jest niedozwolony", Toast.LENGTH_LONG);
+                                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_InvalidDirectionError), Toast.LENGTH_LONG);
                                     toast.show();
                                 }
                             }
@@ -324,14 +327,15 @@ public class Game extends AppCompatActivity {
         {
             player1.setName(extras.getString("p1Name"));
             player2.setName(extras.getString("p2Name"));
-            goalPointsToWin = extras.getInt("goalPoints");
+            goalPointsToWin = extras.getInt("goalPoints") - 1;
         }
         else
         {
 //            if (player1.getName().equals(""))
-                player1.setName("Gracz 1");
+                player1.setName(res.getString(R.string.pl_DefaultPlayer1));
 //            if (player2.getName().equals(""))
-                player2.setName("Gracz 2");
+                player2.setName(res.getString(R.string.pl_DefaultPlayer2));
+
                 goalPointsToWin = 1;
         }
 
@@ -339,23 +343,18 @@ public class Game extends AppCompatActivity {
         g2.bringToFront();
         g1.setWidth(countX * 4);
         g2.setWidth(countX * 4);
-        g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, countX / 4);
-        g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, countX / 4);
+
+        g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
+        g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
         g1.setText(player1.getName());
         g2.setText(player2.getName());
-        g1.setX(countX * 7);
-        g1.setY((countX *  12) - countX / 2);
-        g2.setX(countX * 7);
-        g2.setY((countX * 1) - countX / 2) ;
+        g1.setX((countX * 7) - countX / 3);
+        g1.setY((countX *  12) - countX / 3);
+        g2.setX((countX * 7) - countX / 3);
+        g2.setY((countX * 1) - countX / 3);
 
-        android.support.v7.widget.Toolbar tb = (android.support.v7.widget.Toolbar) findViewById(R.id.tbGame);
-        TextView tbTitle = (TextView) tb.findViewById(R.id.tv_tbTitle);
-        //TextView tbSubtitle = (TextView) tb.findViewById(R.id.tv_tbSubtitle);
-        tb.setTitle(player1.getName() + " " + player1.getPoints() + " : " + player2.getPoints() + " " + player2.getName());
-        //tb.setSubtitle(player1.getPoints() + " : " + player2.getPoints());
-
-        setSupportActionBar(tb);
-        tbTitle.setText(tb.getTitle());
+        setToolbarScore();
+        setSupportActionBar(tbHeader);
         //tbSubtitle.setText(tb.getSubtitle());
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -379,23 +378,32 @@ public class Game extends AppCompatActivity {
         return super.onOptionsItemSelected(menuItem);
     }
 
-    public void startNewGame()
+    public void setToolbarScore()
     {
-//        listLinie.clear();
-//        for (int i = listLinie.size(); i > 40; i++) // TODO exception w onTouch ?
-//        {
-//          //  listLinie.get(40 + i).setVisibility(View.GONE);
-//           // listLinie.remove(i);
-//        }
+        String textScore = res.getString(R.string.score, player1.getName(), player1.getPoints(), player2.getPoints(), player2.getName());
+        tvScore.setText(textScore);
+    }
 
-
+    public void startNewGame(Player winner, Player loser)
+    {
         for (Field field: listFields)
             field.initializeShots();
 
         blockMoveOutsideField();
+
+        while (listLinie.size() > 40)
+        {
+            listLinie.get(listLinie.size() - 1).setVisibility(View.INVISIBLE);
+            listLinie.remove(listLinie.size() - 1);
+        }
         _source = listViews.get(71);
         pilka.setX(_source.getLeft() + _source.getWidth() / 4);
         pilka.setY(_source.getTop() + _source.getHeight() / 4);
+
+        winner.setMove(false);
+        loser.setMove(true);
+        winner.setPoints(winner.getPoints() + 1);
+        setToolbarScore();
 
     }
 
@@ -467,7 +475,7 @@ public class Game extends AppCompatActivity {
         {
             if (toast != null)
                 toast.cancel();
-           toast = Toast.makeText(this,"Najpierw należy wykonać ruch", Toast.LENGTH_SHORT);
+           toast = Toast.makeText(this,res.getString(R.string.pl_MakeMoveFirstError), Toast.LENGTH_SHORT);
            toast.show();
         }
 
@@ -524,8 +532,8 @@ public class Game extends AppCompatActivity {
 
     public void startGame()
     {
-        rysujBoisko();
-        rysujPilke();
+        drawPlayField();
+        drawBall();
         player1.setMove(true);
         whoMoves();
     }
@@ -538,7 +546,7 @@ public class Game extends AppCompatActivity {
             tv.setText("Ruch gracza, " + player2.getName());
     }
 
-    public boolean checkIfShotPossible(ImageView source, ImageView destination) // TODO przerobic cale na switch case
+    public boolean checkIfShotPossible(ImageView source, ImageView destination)
     {
 
         int[][] srcShots = listFields.get(source.getId()).getShots();
@@ -564,20 +572,10 @@ public class Game extends AppCompatActivity {
 
         if (possibleMoves < 2) return false;
 
-        if (Math.abs(destination.getId() - source.getId()) == 1) // --
+
+        switch(destination.getId() - source.getId())
         {
-            if (destination.getId() > source.getId())
-            {
-                if ((srcShots[1][2] == 1) || (dstShots[1][0] == 1))
-                    return false;
-                else
-                {
-                    srcLastShot[1][2] = 1;
-                    dstLastShot[1][0] = 1;
-                }
-            }
-            else
-            {
+            case -1:
                 if ((srcShots[1][0] == 1) || (dstShots[1][2] == 1))
                     return false;
                 else
@@ -585,58 +583,61 @@ public class Game extends AppCompatActivity {
                     srcLastShot[1][0] = 1;
                     dstLastShot[1][2] = 1;
                 }
-            }
-        }
-        else if (Math.abs(destination.getId() - source.getId()) == 11) // |
-        {
-            if (destination.getId() > source.getId()) {
-                if ((srcShots[2][1] == 1) || (dstShots[0][1] == 1))
+                break;
+            case 1:
+                if ((srcShots[1][2] == 1) || (dstShots[1][0] == 1))
                     return false;
-                else {
-                    srcLastShot[2][1] = 1;
-                    dstLastShot[0][1] = 1;
+                else
+                {
+                    srcLastShot[1][2] = 1;
+                    dstLastShot[1][0] = 1;
                 }
-            } else {
+                break;
+            case -11:
                 if ((srcShots[0][1] == 1) || (dstShots[2][1] == 1))
                     return false;
-                else {
+                else
+                {
                     srcLastShot[0][1] = 1;
                     dstLastShot[2][1] = 1;
                 }
-            }
-        }
-        else // \ /
-        {
-            switch(destination.getId() - source.getId())
-            {
-                case -12:
-                    if ((srcShots[0][0] == 1) || (dstShots[2][2] == 1))
-                        return false;
-                    srcLastShot[0][0] = 1;
-                    dstLastShot[2][2] = 1;
-                    break;
-                case -10:
-                    if ((srcShots[0][2] == 1) || (dstShots[2][0] == 1))
-                        return false;
-                    srcLastShot[0][2] = 1;
-                    dstLastShot[2][0] = 1;
-                    break;
-                case 10:
-                    if ((srcShots[2][0] == 1) || (dstShots[0][2] == 1))
-                        return false;
-                    srcLastShot[2][0] = 1;
-                    dstLastShot[0][2] = 1;
-                    break;
-                case 12:
-                    if ((srcShots[2][2] == 1) || (dstShots[0][0] == 1))
-                        return false;
-                    srcLastShot[2][2] = 1;
-                    dstLastShot[0][0] = 1;
-                    break;
+                break;
+            case 11:
+                if ((srcShots[2][1] == 1) || (dstShots[0][1] == 1))
+                    return false;
+                else
+                {
+                    srcLastShot[2][1] = 1;
+                    dstLastShot[0][1] = 1;
+                }
+                break;
+            case -12:
+                if ((srcShots[0][0] == 1) || (dstShots[2][2] == 1))
+                    return false;
+                srcLastShot[0][0] = 1;
+                dstLastShot[2][2] = 1;
+                break;
+            case -10:
+                if ((srcShots[0][2] == 1) || (dstShots[2][0] == 1))
+                    return false;
+                srcLastShot[0][2] = 1;
+                dstLastShot[2][0] = 1;
+                break;
+            case 10:
+                if ((srcShots[2][0] == 1) || (dstShots[0][2] == 1))
+                    return false;
+                srcLastShot[2][0] = 1;
+                dstLastShot[0][2] = 1;
+                break;
+            case 12:
+                if ((srcShots[2][2] == 1) || (dstShots[0][0] == 1))
+                    return false;
+                srcLastShot[2][2] = 1;
+                dstLastShot[0][0] = 1;
+                break;
                 default:
                     return false;
             }
-        }
 
         listFields.get(source.getId()).setLastShot(srcLastShot);
         listFields.get(destination.getId()).setLastShot(dstLastShot);
@@ -685,115 +686,65 @@ public class Game extends AppCompatActivity {
 
         Intent intent = new Intent(this, GameOver.class);
 
+        if ((isGoal) || (isOwnGoal))
+            if (player1.getPoints() == goalPointsToWin)
+            {
+                //intent.putExtra("goal", 0);
+                intent.putExtra("winner", player1.getName());
+                startActivity(intent);
+            }
+            else if (player2.getPoints() == goalPointsToWin)
+            {
+               // intent.putExtra("goal", 1);
+                intent.putExtra("winner", player2.getName());
+                startActivity(intent);
+            }
+
         if (player1.isMove())
         {
             if (isOwnGoal)
             {
-                player2.setPoints(player2.getPoints()+1);
-
-                if (player2.getPoints() == goalPointsToWin)
-                {
-                    intent.putExtra("goal", 1);
-                    intent.putExtra("winner", player2.getName());
-                    startActivity(intent);
-                }
-                else
-                {
-
-                    //startNewGame();
-                    player2.setMove(true);
-                    player1.setMove(!player2.isMove());
-                    return true;
-                }
+                startNewGame(player2, player1);
+                return true;
             }
 
             else if (isGoal)
             {
-                player1.setPoints(player1.getPoints() + 1);
-
-                if (player1.getPoints() == goalPointsToWin)
-                {
-                    intent.putExtra("goal", 2);
-                    intent.putExtra("winner", player1.getName());
-                    startActivity(intent);
-                }
-                else
-                {
-                    // TODO NOWA GRA
-                }
+                startNewGame(player1, player2);
+                return true;
             }
 
         }
         else if (player2.isMove())
             if (isOwnGoal)
             {
-                player1.setPoints(player2.getPoints() + 1);
-
-                if (player1.getPoints() == goalPointsToWin)
-                {
-                    intent.putExtra("goal", 3);
-                    intent.putExtra("winner", player1.getName());
-                    startActivity(intent);
-                }
-                else
-                {
-                    // TODO NOWA GRA
-                }
+                startNewGame(player1, player2);
+                return true;
             }
-
             else if (isGoal)
             {
-                player2.setPoints(player2.getPoints() + 1);
-
-                if (player2.getPoints() == goalPointsToWin)
-                {
-                    intent.putExtra("goal", 4);
-                    intent.putExtra("winner", player2.getName());
-                    startActivity(intent);
-                }
-                else
-                {
-                    // TODO NOWA GRA
-                }
+                startNewGame(player2, player1);
+                return true;
             }
 
         if (possibleMoves <= 2)
         {
             if (player1.isMove())
             {
-                player2.setPoints(player2.getPoints() + 1);
-
-                if (player2.getPoints() == goalPointsToWin)
-                {
-                    intent.putExtra("goal", 4);
-                    intent.putExtra("winner", player2.getName());
-                    startActivity(intent);
-                }
-                else
-                {
-                    // TODO NOWA GRA
-                }
-            } else
+                startNewGame(player2, player1);
+                return true;
+            }
+            else
             {
-                player1.setPoints(player1.getPoints() + 1);
-
-                if (player1.getPoints() == goalPointsToWin)
-                {
-                    intent.putExtra("goal", 2);
-                    intent.putExtra("winner", player1.getName());
-                    startActivity(intent);
-                }
-                else
-                {
-                    // TODO NOWA GRA
-                }
+                startNewGame(player1, player2);
+                return true;
             }
         }
 
         return false;
     }
 
-    public boolean rysujLinie(ImageView source, ImageView destination) // TODO wyswietlanie linii na innej rozdzialce,
+    public boolean drawLine(ImageView source, ImageView destination) // TODO wyswietlanie linii na innej rozdzialce,
     {
         Line line = new Line(this);
 
@@ -818,17 +769,17 @@ public class Game extends AppCompatActivity {
             return false;
     }
 
-    public void rysujPilke()
+    public void drawBall()
     {
-        int SRODEK = 71;
+        int MIDDLE = 71;
         Ball ball = new Ball(this);
-        ball.createBall(listViews.get(SRODEK));
+        ball.createBall(listViews.get(MIDDLE));
 
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.FLlay);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX/2, countX/2);
 
-        params.leftMargin = listViews.get(SRODEK).getLeft() + ball.getCenterX();
-        params.topMargin = listViews.get(SRODEK). getTop() + ball.getCenterY();
+        params.leftMargin = listViews.get(MIDDLE).getLeft() + ball.getCenterX();
+        params.topMargin = listViews.get(MIDDLE). getTop() + ball.getCenterY();
 
         pilka = ball;
         frameLayout.addView(pilka, params);
@@ -886,12 +837,12 @@ public class Game extends AppCompatActivity {
             listFields.get(i).setShots(tmpShots);
         }
     }
-    public void rysujBoisko()
+    public void drawPlayField()
     {
         int[] fieldID = {12, 13, 14, 15, 4, 5, 6, 17, 18, 19, 20, 31, 42, 53, 64, 75, 86, 97, 108, 119, 130, 129, 128, 127, 138, 137, 136, 125, 124, 123, 122, 111, 100, 89, 78, 67, 56, 45, 34, 23, 12};
 
         for(int i = 0; i < fieldID.length - 1; i++)
-            rysujLinie(listViews.get(fieldID[i]), listViews.get(fieldID[i+1]));
+            drawLine(listViews.get(fieldID[i]), listViews.get(fieldID[i+1]));
 
         blockMoveOutsideField();
     }

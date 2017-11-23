@@ -26,6 +26,8 @@
         <activity android:name=".GameOver" />
         <activity android:name=".GameModes" />
         <activity android:name=".BluetoothConnection" />
+        <activity android:name=".Bluetooth.MainActivity"/>
+        <activity android:name=".Bluetooth.DeviceListActivity"/>
         <activity android:name=".BluetoothService" />
     </application>
 
