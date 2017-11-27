@@ -466,6 +466,11 @@ public class BluetoothService extends AppCompatActivity {
         BluetoothService.this.start();
     }
 
+    public BluetoothService()
+    {
+
+    }
+
     private void connectionLost()
     {
        // Toast.makeText(this, "Connection lost", Toast.LENGTH_LONG).show();

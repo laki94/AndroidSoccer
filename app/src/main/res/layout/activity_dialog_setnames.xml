@@ -21,13 +21,11 @@
         android:id="@+id/etFirstPlayerName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:gravity="center"
-        android:layout_gravity="center_horizontal"
         android:hint="@string/pl_DefaultPlayer1"
-        android:inputType="text|textNoSuggestions"
-        android:maxEms="9"
-        />
+        android:inputType="textNoSuggestions"/>
 
     <TextView
         android:id="@+id/tvSecondPlayerName"
@@ -44,13 +42,11 @@
         android:id="@+id/etSecondPlayerName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:gravity="center"
-        android:layout_gravity="center_horizontal"
         android:hint="@string/pl_DefaultPlayer2"
-        android:inputType="text|textNoSuggestions"
-        android:maxEms="9"
-        />
+        android:inputType="textNoSuggestions" />
 
     <TextView
         android:id="@+id/tvGoalPoints"

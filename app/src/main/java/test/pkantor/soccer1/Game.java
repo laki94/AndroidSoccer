@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import static java.lang.Math.round;
@@ -327,7 +328,7 @@ public class Game extends AppCompatActivity {
         {
             player1.setName(extras.getString("p1Name"));
             player2.setName(extras.getString("p2Name"));
-            goalPointsToWin = extras.getInt("goalPoints") - 1;
+            goalPointsToWin = extras.getInt("goalPoints");
         }
         else
         {
@@ -346,6 +347,7 @@ public class Game extends AppCompatActivity {
 
         g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
         g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
+
         g1.setText(player1.getName());
         g2.setText(player2.getName());
         g1.setX((countX * 7) - countX / 3);
@@ -381,6 +383,7 @@ public class Game extends AppCompatActivity {
     public void setToolbarScore()
     {
         String textScore = res.getString(R.string.score, player1.getName(), player1.getPoints(), player2.getPoints(), player2.getName());
+        tvScore.setTextSize(TypedValue.COMPLEX_UNIT_SP, ((countX / res.getDisplayMetrics().scaledDensity) / 2) - (textScore.length() / 10)) ;
         tvScore.setText(textScore);
     }
 
@@ -402,7 +405,7 @@ public class Game extends AppCompatActivity {
 
         winner.setMove(false);
         loser.setMove(true);
-        winner.setPoints(winner.getPoints() + 1);
+
         setToolbarScore();
 
     }
@@ -540,6 +543,7 @@ public class Game extends AppCompatActivity {
     public void whoMoves()
     {
         TextView tv = (TextView) findViewById(R.id.tvWhoMoves);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
         if (player1.isMove())
             tv.setText("Ruch gracza, " + player1.getName());
         else
@@ -665,9 +669,17 @@ public class Game extends AppCompatActivity {
                 if (i == fieldId)
                 {
                     if (player2.isMove())
+                    {
                         isOwnGoal = true;
+//                        player1.addPoint();
+                    }
+
                     else
+                    {
                         isGoal = true;
+//                        player2.addPoint();
+                    }
+                    player1.addPoint();
                     break;
                 }
 
@@ -676,9 +688,16 @@ public class Game extends AppCompatActivity {
                     if (i == fieldId)
                     {
                         if (player1.isMove())
+                        {
                             isOwnGoal = true;
+//                            player2.addPoint();
+                        }
                         else
+                        {
                             isGoal = true;
+//                            player1.addPoint();
+                        }
+                        player2.addPoint();
                         break;
                     }
 

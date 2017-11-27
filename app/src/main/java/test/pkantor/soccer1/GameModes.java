@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -23,7 +25,6 @@ public class GameModes extends AppCompatActivity{
 
     private Player player1 = new Player();
     private Player player2 = new Player();
-
     private AlertDialog dialog = null;
 
     Resources res;
@@ -58,64 +59,33 @@ public class GameModes extends AppCompatActivity{
         np.setMaxValue(9);
         np.setWrapSelectorWheel(true);
 
-        p1Name.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) // TODO ustawic ze mozna pisac tylko litery
-            {
-                if (p1Name.getText().length() > p1Name.getMaxEms())
+        p1Name.setFilters(new InputFilter[]
                 {
-                    Toast.makeText(getApplicationContext(), res.getString(R.string.pl_NameOverMaxEms, p1Name.getMaxEms()), Toast.LENGTH_LONG).show();
-                    p1Name.setText(s.subSequence(0, p1Name.getMaxEms()));
-                }
+                        new InputFilter() {
+                            public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
+                            {
+                                if (src.toString().matches("[a-zA-Z]+"))
+                                    return src;
+                                return "";
+                            }
+                        },
+                        new InputFilter.LengthFilter(9)
+                });
 
-
-                if (s.toString().contains(" "))
+        p2Name.setFilters(new InputFilter[]
                 {
-                    Toast.makeText(getApplicationContext(), res.getString(R.string.pl_WhitespaceError), Toast.LENGTH_LONG).show();
-                    p1Name.setText(s.subSequence(0, start));
-                }
+                        new InputFilter() {
+                            public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
+                            {
 
-                p1Name.setSelection(p1Name.getText().length());
+                                if (src.toString().matches("[a-zA-Z]+"))
+                                    return src;
+                                return "";
+                            }
+                        },
+                        new InputFilter.LengthFilter(9)
+                });
 
-            }
-        });
-
-        p2Name.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-                if (p2Name.getText().length() > p2Name.getMaxEms())
-                {
-                    Toast.makeText(getApplicationContext(), res.getString(R.string.pl_NameOverMaxEms, p2Name.getMaxEms()), Toast.LENGTH_LONG).show();
-                    p2Name.setText(s.subSequence(0, p2Name.getMaxEms()));
-                }
-
-                if (s.toString().contains(" "))
-                {
-                    Toast.makeText(getApplicationContext(), res.getString(R.string.pl_WhitespaceError), Toast.LENGTH_LONG).show();
-                    p2Name.setText(s.subSequence(0, start));
-                }
-
-
-                p2Name.setSelection(p2Name.getText().length());
-            }
-        });
 
         saveNames.setOnClickListener(new View.OnClickListener(){
             @Override
