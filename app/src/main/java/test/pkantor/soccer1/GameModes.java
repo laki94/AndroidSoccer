@@ -1,25 +1,18 @@
 package test.pkantor.soccer1;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
-import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import test.pkantor.soccer1.Bluetooth.MainActivity;
+import test.pkantor.soccer1.Bluetooth.BluetoothMainActivity;
 
 public class GameModes extends AppCompatActivity{
 
@@ -38,7 +31,7 @@ public class GameModes extends AppCompatActivity{
 
     public void clickPlayBluetooth(View v)
     {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, BluetoothMainActivity.class);
         startActivity(intent);
     }
 

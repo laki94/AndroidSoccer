@@ -1,8 +1,4 @@
-package test.pkantor.soccer1;
-
-/**
- * Created by Pawel on 20.11.2017.
- */
+package test.pkantor.soccer1.Bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -14,6 +10,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import test.pkantor.soccer1.R;
+
+/**
+ * Created by Pawel on 27.11.2017.
+ */
 
 public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
 
@@ -35,13 +36,13 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
 
         if (device != null) {
             TextView deviceName = (TextView) convertView.findViewById(R.id.tvDeviceName);
-            TextView deviceAddress = (TextView) convertView.findViewById(R.id.tvDeviceAddress);
+            TextView deviceAdress = (TextView) convertView.findViewById(R.id.tvDeviceAddress);
 
             if (deviceName != null) {
                 deviceName.setText(device.getName());
             }
-            if (deviceAddress != null) {
-                deviceAddress.setText(device.getAddress());
+            if (deviceAdress != null) {
+                deviceAdress.setText(device.getAddress());
             }
         }
 

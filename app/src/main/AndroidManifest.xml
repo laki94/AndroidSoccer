@@ -19,16 +19,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Options" />
         <activity
             android:name=".Game"
             android:screenOrientation="portrait" />
         <activity android:name=".GameOver" />
         <activity android:name=".GameModes" />
-        <activity android:name=".BluetoothConnection" />
-        <activity android:name=".Bluetooth.MainActivity"/>
+        <activity android:name=".Bluetooth.BluetoothMainActivity"/>
         <activity android:name=".Bluetooth.DeviceListActivity"/>
-        <activity android:name=".BluetoothService" />
     </application>
 
 </manifest>
