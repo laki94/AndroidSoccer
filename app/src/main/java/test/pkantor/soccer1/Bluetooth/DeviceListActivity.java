@@ -69,7 +69,7 @@ public class DeviceListActivity extends Activity {
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 doDiscovery();
-                v.setVisibility(View.GONE);
+//                v.setVisibility(View.GONE);
             }
         });
 
@@ -166,6 +166,7 @@ public class DeviceListActivity extends Activity {
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+//            intent.putExtra("firstPlayer", true);
 
             // Set result and finish this Activity
             setResult(Activity.RESULT_OK, intent);

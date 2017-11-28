@@ -7,17 +7,21 @@ package test.pkantor.soccer1.Bluetooth;
 import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,13 +31,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import test.pkantor.soccer1.Game;
 import test.pkantor.soccer1.R;
 
 
@@ -54,11 +61,16 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
 
     Button btnStartConnection;
     Button btnSend;
+    Button bFindUnpairedDevices;
 //    Button btnScan;
 
     EditText etSend;
     EditText mInEditText;
     EditText mOutEditText;
+
+    AlertDialog dialog;
+    Resources res;
+    boolean imFirstPlayer = false;
 
     private static final UUID MY_UUID_INSECURE =
             UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
@@ -97,7 +109,7 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
     @Override
     public void onResume() {
         super.onResume();
-
+//        imFirstPlayer = false;
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
@@ -114,17 +126,17 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
     {
         lvNewDevices.setAdapter(mBTDevicesAdapter);
 
-        mOutEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // If the action is a key-up event on the return key, send the message
-                if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                    String message = v.getText().toString();
-                    sendMessage(message);
-                }
-                return true;
-            }
-        });
+//        mOutEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                // If the action is a key-up event on the return key, send the message
+//                if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
+//                    String message = v.getText().toString();
+//                    sendMessage(message);
+//                }
+//                return true;
+//            }
+//        });
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,7 +170,7 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
 
             // Reset out string buffer to zero and clear the edit text field
             mOutStringBuffer.setLength(0);
-            mOutEditText.setText(mOutStringBuffer);
+//            mOutEditText.setText(mOutStringBuffer);
         }
     }
 
@@ -178,15 +190,23 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
                 case 1:
                     switch (msg.arg1) {
                         case BluetoothConnectionService.STATE_CONNECTED:
-                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName)); // TODO connected
                             mBTDevicesAdapter.clear();
+                            if (mBluetoothConnectionService.mState == 3)
+                                showSetNames();
+                            else
+                                Toast.makeText(getApplicationContext(), "cos sie popsulo", Toast.LENGTH_LONG).show();
+
                             break;
                         case BluetoothConnectionService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
                             break;
                         case BluetoothConnectionService.STATE_LISTEN:
+                            //imFirstPlayer = true;
+                            break;
                         case BluetoothConnectionService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
+                            imFirstPlayer = false;
                             break;
                     }
                     break;
@@ -253,11 +273,13 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
         // Get the device MAC address
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+
+        imFirstPlayer = true;
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 
         // Attempt to connect to the device
-        mBluetoothConnectionService.connect(device, MY_UUID_INSECURE); // connectthread w mblutu powinien byc null
+        mBluetoothConnectionService.connect(device, MY_UUID_INSECURE);
     }
 
     @Override
@@ -272,10 +294,19 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
         btnStartConnection = (Button) findViewById(R.id.btnStartConnection);
         btnSend = (Button) findViewById(R.id.btnSend);
         etSend = (EditText) findViewById(R.id.etIn);
-//        btnScan = (Button) findViewById(R.id.button_scan);
+        res = getResources();
+//        bFindUnpairedDevices = (Button) findViewById(R.id.btnFindUnpairedDevices);
+//        bFindUnpairedDevices.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getApplicationContext(), Game.class);
+//                startActivity(intent);
+//            }
+//        });
+        //        btnScan = (Button) findViewById(R.id.button_scan);
 
         mInEditText = (EditText) findViewById(R.id.etIn);
-        mOutEditText = (EditText) findViewById(R.id.etOut);
+       // mOutEditText = (EditText) findViewById(R.id.etOut);
 
         //Broadcasts when bond state changes (ie:pairing)
        // IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
@@ -283,11 +314,12 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        lvNewDevices.setOnItemClickListener(BluetoothMainActivity.this);
+        //lvNewDevices.setOnItemClickListener(BluetoothMainActivity.this);
 
         btnStartConnection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               // imFirstPlayer = true;
                 Intent serverIntent = new Intent(getApplicationContext(), DeviceListActivity.class);
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
             }
@@ -608,5 +640,90 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
             mBTDevice = mBTDevices.get(i);
             mBluetoothConnectionService = new BluetoothConnectionService(BluetoothMainActivity.this, mHandler);
         }
+    }
+
+    public void showSetNames()
+    {
+        dialog = null;
+        final Intent intent = new Intent();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.activity_dialog_setnames, null);
+        final EditText p1Name = (EditText) mView.findViewById(R.id.etFirstPlayerName);
+        final EditText p2Name = (EditText) mView.findViewById(R.id.etSecondPlayerName);
+        Button saveNames = (Button) mView.findViewById(R.id.bSaveNames);
+
+        final NumberPicker np = (NumberPicker) mView.findViewById(R.id.np);
+        np.setMinValue(1);
+        np.setMaxValue(9);
+        np.setWrapSelectorWheel(true);
+
+        p1Name.setFilters(new InputFilter[]
+                {
+                        new InputFilter() {
+                            public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
+                            {
+                                if (src.toString().matches("[a-zA-Z]+"))
+                                    return src;
+                                return "";
+                            }
+                        },
+                        new InputFilter.LengthFilter(9)
+                });
+
+        p2Name.setFilters(new InputFilter[]
+                {
+                        new InputFilter() {
+                            public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
+                            {
+
+                                if (src.toString().matches("[a-zA-Z]+"))
+                                    return src;
+                                return "";
+                            }
+                        },
+                        new InputFilter.LengthFilter(9)
+                });
+
+
+        saveNames.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v)
+            {
+                dialog.dismiss();
+                if (p1Name.getText().length() != 0)
+                    intent.putExtra("p1Name", p1Name.getText().toString());
+                else
+                    intent.putExtra("p1Name", res.getString(R.string.pl_DefaultPlayer1));
+
+                if (p2Name.getText().length() != 0)
+                    intent.putExtra("p2Name", p2Name.getText().toString());
+                else
+                    intent.putExtra("p2Name", res.getString(R.string.pl_DefaultPlayer2));
+
+                intent.putExtra("goalPoints", np.getValue());
+                startActivity(intent);
+            }
+//                    Toast.makeText(GameModes.this, "blbelel", Toast.LENGTH_SHORT).show()
+        });
+
+        builder.setView(mView);
+        dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
+
+        if (imFirstPlayer)
+        {
+            mView.findViewById(R.id.tvSecondPlayerName).setVisibility(View.GONE);
+            p2Name.setVisibility(View.GONE);
+        }
+        else
+        {
+            mView.findViewById(R.id.tvFirstPlayerName).setVisibility(View.GONE);
+            p1Name.setVisibility(View.GONE);
+            mView.findViewById(R.id.tvGoalPoints).setVisibility(View.GONE);
+            np.setVisibility(View.GONE);
+        }
+
+        dialog.show();
     }
 }

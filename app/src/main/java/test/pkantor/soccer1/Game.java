@@ -1,6 +1,7 @@
 package test.pkantor.soccer1;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.design.widget.NavigationView;
@@ -18,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Vibrator;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -53,6 +55,8 @@ public class Game extends AppCompatActivity {
 
     Player player1;
     Player player2;
+
+    Vibrator vibrator;
 
     Button acceptMove;
     CheckBox cbAcceptMove = null;
@@ -182,6 +186,7 @@ public class Game extends AppCompatActivity {
 
         res = getResources();
 
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         prepareDrawer();
 
 //        cbAcceptMove = (CheckBox) header.findViewById(R.id.nav_AcceptMove);
@@ -524,6 +529,7 @@ public class Game extends AppCompatActivity {
                 }
                 else
                 {
+                    vibrator.vibrate(150);
                     player1.setMove(player2.isMove());
                     player2.setMove(!player1.isMove());
                 }
