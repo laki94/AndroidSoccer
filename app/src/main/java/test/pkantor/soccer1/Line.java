@@ -154,8 +154,8 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
            // this.params.width = iv.getWidth();
 //            this.params.height = 10;
             this.setRotation(90);
-            fx += (iv.getWidth() - params.width / 2) + 2;
-            sx += (iv.getWidth() - params.width / 2) + 2;
+            fx += (iv.getWidth() - params.width / 2);
+            sx += (iv.getWidth() - params.width / 2);
 
             params.leftMargin = ((int) getFx() < (int) getSx()) ? (int) getFx() : (int) getSx();
             params.topMargin = ((int) getFy() < (int) getSy()) ? (int) getFy(): (int) getSy();
@@ -180,9 +180,9 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
             return false;
         }
 
-        int skos = (int) sqrt(pow(iv.getWidth(), 2) + pow(iv.getHeight(), 2));
+        int skos = (int) sqrt(pow(iv.getWidth(), 2) + pow(iv.getHeight(), 2)) + 4;
 
-        int blad = (skos + 4 - width) / 9;
+        int blad = (skos + 2 - width) / 9;
 
         fx += iv.getWidth() - blad; // TODO dokonczyc wyswietlanie linii chyba cos bedzie w (skos - szerokosc linii / 2)
         sx += iv.getWidth() - blad;
@@ -194,7 +194,7 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
 //        sy += iv.getHeight() / 2 - 19;
 
        // this.params.width = 5; // TODO zmniejszyc grubosc linii
-        this.params.height = skos + 4;
+        this.params.height = skos;
 
         params.leftMargin = ((int) getFx() < (int) getSx()) ? (int) getFx() : (int) getSx();
         params.topMargin = ((int) getFy() < (int) getSy()) ? (int) getFy(): (int) getSy();

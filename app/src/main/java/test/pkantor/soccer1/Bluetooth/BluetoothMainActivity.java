@@ -8,6 +8,7 @@ import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -38,9 +39,11 @@ import android.widget.Toast;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
 import test.pkantor.soccer1.Game;
+import test.pkantor.soccer1.GlobalSocket;
 import test.pkantor.soccer1.R;
 
 
@@ -71,6 +74,12 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
     AlertDialog dialog;
     Resources res;
     boolean imFirstPlayer = false;
+    boolean imReady = false;
+    boolean secondPlayerReady = false;
+    ProgressDialog mProgressDialog;
+    String player1Name;
+    String player2Name;
+    String goalPoints;
 
     private static final UUID MY_UUID_INSECURE =
             UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
@@ -202,7 +211,6 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
                             setStatus(R.string.title_connecting);
                             break;
                         case BluetoothConnectionService.STATE_LISTEN:
-                            //imFirstPlayer = true;
                             break;
                         case BluetoothConnectionService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
@@ -221,6 +229,7 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     mBTDevicesAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                    checkIfPlayerReady(readMessage);
                     break;
                 case 4:
                     // save the connected device's name
@@ -239,6 +248,54 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
             }
         }
     };
+
+    public void checkIfPlayerReady(String msg)
+    {
+        StringTokenizer tokenizer = new StringTokenizer(msg, ":");
+
+        if (imFirstPlayer)
+            player2Name = tokenizer.nextToken();
+        else
+        {
+            player1Name = tokenizer.nextToken();
+            goalPoints = tokenizer.nextToken();
+        }
+
+        if (tokenizer.nextToken().equals("ready"))
+            secondPlayerReady = true;
+
+        if ((imReady) && (secondPlayerReady))
+            startGame();
+
+    }
+
+    public void startGame()
+    {
+//        View mView = getLayoutInflater().inflate(R.layout.activity_dialog_setnames, null);
+//        final EditText p1Name = (EditText) mView.findViewById(R.id.etFirstPlayerName);
+//        final EditText p2Name = (EditText) mView.findViewById(R.id.etSecondPlayerName);
+//        final NumberPicker np = (NumberPicker) mView.findViewById(R.id.np);
+
+//        Game bluetoothGame = new Game(mBluetoothConnectionService);
+
+        Intent intent = new Intent(this, Game.class);
+
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
+
+        GlobalSocket gSocket = (GlobalSocket) getApplicationContext();
+        gSocket.setBluetoothConnectionService(mBluetoothConnectionService);
+        gSocket.setBluetoothHandler(mBluetoothConnectionService.getHandler());
+
+
+        if (imFirstPlayer)
+            intent.putExtra("amIFirst", imFirstPlayer);
+        intent.putExtra("p1Name", player1Name);
+        intent.putExtra("p2Name", player2Name);
+        intent.putExtra("goalPoints", Integer.valueOf(goalPoints));
+        intent.putExtra("gameMode", Game.BLUETOOTH);
+        startActivity(intent);
+    }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -633,7 +690,7 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
 
         //create the bond.
         //NOTE: Requires API 17+? I think this is JellyBean
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
             Log.d(TAG, "Trying to pair with " + deviceName);
             mBTDevices.get(i).createBond();
 
@@ -691,18 +748,62 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
             public void onClick(View v)
             {
                 dialog.dismiss();
-                if (p1Name.getText().length() != 0)
-                    intent.putExtra("p1Name", p1Name.getText().toString());
-                else
-                    intent.putExtra("p1Name", res.getString(R.string.pl_DefaultPlayer1));
 
-                if (p2Name.getText().length() != 0)
-                    intent.putExtra("p2Name", p2Name.getText().toString());
-                else
-                    intent.putExtra("p2Name", res.getString(R.string.pl_DefaultPlayer2));
+                imReady = true;
 
-                intent.putExtra("goalPoints", np.getValue());
-                startActivity(intent);
+                if (imFirstPlayer)
+                {
+//                    if (p1Name.getText().length() != 0)
+//                        player1Name = res.getString(R.string.pl_DefaultPlayer1);
+//                    else
+                        player1Name = p1Name.getText().toString();
+                        if (player1Name.equals(""))
+                            player1Name = res.getString(R.string.pl_DefaultPlayer1);
+
+                    goalPoints = String.valueOf(np.getValue());
+                }
+                else
+                {
+                    player2Name = p2Name.getText().toString();
+                    if (player2Name.equals(""))
+                        player2Name = res.getString(R.string.pl_DefaultPlayer2);
+                }
+
+                //sendMessage("ready");
+                //mProgressDialog = ProgressDialog.show(BluetoothMainActivity.this, "Czekanie na drugiego gracza", "Prosze czekac...", true);
+
+
+                mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("handler", "sending message");
+                            String message;
+                            if (imFirstPlayer)
+                                message = player1Name + ":" + goalPoints;
+                            else
+                                message = player2Name;
+
+                            message += ":ready";
+                            sendMessage(message);
+                        }
+                    }, 1000);
+
+
+                if ((imReady) && (secondPlayerReady))
+                    startGame();
+
+//                if (p1Name.getText().length() != 0)
+//                    intent.putExtra("p1Name", p1Name.getText().toString());
+//                else
+//                    intent.putExtra("p1Name", res.getString(R.string.pl_DefaultPlayer1));
+//
+//                if (p2Name.getText().length() != 0)
+//                    intent.putExtra("p2Name", p2Name.getText().toString());
+//                else
+//                    intent.putExtra("p2Name", res.getString(R.string.pl_DefaultPlayer2));
+//
+//                intent.putExtra("goalPoints", np.getValue());
+//                startActivity(intent);
             }
 //                    Toast.makeText(GameModes.this, "blbelel", Toast.LENGTH_SHORT).show()
         });

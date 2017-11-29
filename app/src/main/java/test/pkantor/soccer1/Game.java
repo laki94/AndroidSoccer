@@ -1,9 +1,13 @@
 package test.pkantor.soccer1;
 
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -24,12 +28,20 @@ import android.os.Vibrator;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
+
+import test.pkantor.soccer1.Bluetooth.BluetoothConnectionService;
+import test.pkantor.soccer1.Bluetooth.BluetoothMainActivity;
+
 import static java.lang.Math.round;
 import static test.pkantor.soccer1.R.layout.activity_game;
 
 public class Game extends AppCompatActivity {
 
     FrameLayout lay;
+
+    public static final int LOCAL = 0;
+    public static final int BLUETOOTH = 1;
 
     private Toast toast = null;
 
@@ -38,11 +50,13 @@ public class Game extends AppCompatActivity {
     int countX;
     int countY;
     int goalPointsToWin;
+    int gameMode;
     boolean playerAccepted = true;
     boolean canDelete = false;
     boolean doShowAcceptButton = true;
     boolean doShowPlayerNames = true;
     boolean newGame = false;
+    boolean imFirstPlayer = false;
 
     ImageView _source;
     ImageView _destination;
@@ -65,6 +79,10 @@ public class Game extends AppCompatActivity {
     TextView tvScore;
 
     Resources res;
+    BluetoothConnectionService mBluetoothConnectionService;
+    Handler mHandler;
+    StringBuffer mOutStringBuffer;
+
 
     @Override
     public void onBackPressed()
@@ -188,22 +206,7 @@ public class Game extends AppCompatActivity {
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         prepareDrawer();
-
-//        cbAcceptMove = (CheckBox) header.findViewById(R.id.nav_AcceptMove);
-
-//
-//        cbAcceptMove.setOnClickListener(new View.OnClickListener()
-//        {
-//            public void onClick(View v)
-//            {
-//                cbAcceptMove.setChecked(!cbAcceptMove.isChecked());
-//            }
-//        });
-        //CheckBox cb = (CheckBox) navigationView.getMenu().findItem(R.id.nav_item1).getActionView().findViewById(R.id.checkBox111);
-        //cb.setChecked(false);
-        //cb.setChecked(true);
-
-
+        mOutStringBuffer = new StringBuffer("");
 
         acceptMove = (Button) findViewById(R.id.acceptMove);
         player1 = new Player();
@@ -225,8 +228,8 @@ public class Game extends AppCompatActivity {
 
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
-        countY = round(height/13);
-        countX = round(width/11);
+        countY = round(height / 13);
+        countX = round(width / 11);
 
         for (int i = 1; i < 144; i++) { //countX*countY
             final Field pol = new Field(this);
@@ -247,127 +250,159 @@ public class Game extends AppCompatActivity {
             pol.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
-                    switch(motionEvent.getAction())
-                    {
+                    switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            Log.d("DOWN","" + pol.getId());
-
-                            _lastDestination = (ImageView) findViewById(pol.getId());
-
-                            if (!tryToCreateLine(_source, _lastDestination))
-                            {
-                                if (!checkIfShotPossible(_source, _lastDestination))
-                                {
-                                    if (toast != null)
-                                        toast.cancel();
-                                    if (_lastDestination == _source)
-                                        toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_SelectNextFieldError), Toast.LENGTH_LONG);
-                                    else
-                                        toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_TooLongPassError), Toast.LENGTH_LONG);
-                                    toast.show();
-                                    _lastDestination = _destination;
-                                }
+                            Log.d("DOWN", "" + pol.getId());
+                            if ((isMyTurn() || gameMode == LOCAL)) {
+                                _lastDestination = (ImageView) findViewById(pol.getId());
+                                makeMove();
+                            } else if ((!isMyTurn()) && (gameMode == BLUETOOTH)) {
+                                if (toast != null)
+                                    toast.cancel();
+                                toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_NotYourTurnError), Toast.LENGTH_LONG);
+                                toast.show();
                             }
-                            else
-                            {
-                                if (checkIfShotPossible(_source, _lastDestination))
-                                {
-                                    _destination = _lastDestination;
-                                    if (drawLine(_source, _destination))
-                                    {
-                                        canDelete = true;
-                                        playerAccepted = false;
-                                        pilka.setX(_destination.getLeft() + _destination.getWidth()/4);
-                                        pilka.setY(_destination.getTop() + _destination.getHeight()/4);
-                                        pilka.bringToFront();
-                                        pilka.invalidate();
-
-                                        if (!doShowAcceptButton)
-                                            acceptMove.performClick();
-
-//                                        if (newGame)
-//                                            startNewGame();
-                                    }
-                                }
-
-                                else
-                                {
-                                    if (toast != null)
-                                        toast.cancel();
-                                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_InvalidDirectionError), Toast.LENGTH_LONG);
-                                    toast.show();
-                                }
-                            }
-
-
 
                             return true;
                         case MotionEvent.ACTION_UP:
-                            Log.d("UP","" + pol.getId());
+                            Log.d("UP", "" + pol.getId());
                             return false;
                         default:
                             return false;
+
                     }
                 }
-//
-//////            iv.setOnClickListener(new View.OnClickListener() {
-//////                @Override
-//////                public void onClick(View view) {
-//////                    Log.d("Clickediv","" + iv.getId());
-//////                }
-//////            });
-//////            iv.setOnLongClickListener(new View.OnLongClickListener() {
-//////                @Override
-//////                public boolean onLongClick(View view)
-//////                {
-//////                    Log.d("Hold","" + iv.getId());
-//////                    return true;
-//////                }
             });
         }
         _source = listViews.get(71);
 
-        Bundle extras = getIntent().getExtras();
 
-        if (extras != null)
-        {
+//        Bundle extras = getIntent().getExtras();
+        Intent prevIntent = getIntent();
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, prevIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        Bundle extras = prevIntent.getExtras();
+
+        if (extras != null) {
             player1.setName(extras.getString("p1Name"));
             player2.setName(extras.getString("p2Name"));
             goalPointsToWin = extras.getInt("goalPoints");
-        }
-        else
-        {
+            gameMode = extras.getInt("gameMode");
+            imFirstPlayer = extras.getBoolean("amIFirst");
+            if (gameMode == BLUETOOTH) {
+                GlobalSocket gSocket = (GlobalSocket) getApplicationContext();
+                mBluetoothConnectionService = gSocket.getBluetoothConnectionService();
+                mHandler = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        switch (msg.what) {
+                            case 1:
+                                break;
+                            case 3:
+                                byte[] writeBuf = (byte[]) msg.obj;
+                                // construct a string from the buffer
+                                String writeMessage = new String(writeBuf);
+                                //Toast.makeText(getApplicationContext(), "Wyslano " + writeMessage, Toast.LENGTH_LONG).show();
+//                                mBTDevicesAdapter.add("Me:  " + writeMessage);
+                                break;
+                            case 2:
+                                byte[] readBuf = (byte[]) msg.obj;
+                                // construct a string from the valid bytes in the buffer
+                                String readMessage = new String(readBuf, 0, msg.arg1);
+
+                                StringTokenizer tokenizer = new StringTokenizer(readMessage, ":");
+                                if (tokenizer.countTokens() == 2) {
+                                    _lastDestination = listViews.get(Integer.parseInt(tokenizer.nextToken()));
+                                    makeMove();
+                                    if (tokenizer.nextToken().equals("move"))
+                                    {
+//                                        playerAccepted = false;
+                                        acceptMove.performClick();
+                                    }
+
+                                }
+                                break;
+
+                        }
+                    }
+                };
+                mBluetoothConnectionService.setHandler(mHandler);
+            }
+        } else {
 //            if (player1.getName().equals(""))
-                player1.setName(res.getString(R.string.pl_DefaultPlayer1));
+            player1.setName(res.getString(R.string.pl_DefaultPlayer1));
 //            if (player2.getName().equals(""))
-                player2.setName(res.getString(R.string.pl_DefaultPlayer2));
+            player2.setName(res.getString(R.string.pl_DefaultPlayer2));
 
-                goalPointsToWin = 1;
+            goalPointsToWin = 1;
         }
 
-        g1.bringToFront();
-        g2.bringToFront();
-        g1.setWidth(countX * 4);
-        g2.setWidth(countX * 4);
+            g1.bringToFront();
+            g2.bringToFront();
+            g1.setWidth(countX * 4);
+            g2.setWidth(countX * 4);
 
-        g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
-        g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
+            g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
+            g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
 
-        g1.setText(player1.getName());
-        g2.setText(player2.getName());
-        g1.setX((countX * 7) - countX / 3);
-        g1.setY((countX *  12) - countX / 3);
-        g2.setX((countX * 7) - countX / 3);
-        g2.setY((countX * 1) - countX / 3);
+            g1.setText(player1.getName());
+            g2.setText(player2.getName());
+            g1.setX((countX * 7) - countX / 3);
+            g1.setY((countX * 12) - countX / 3);
+            g2.setX((countX * 7) - countX / 3);
+            g2.setY((countX * 1) - countX / 3);
 
-        setToolbarScore();
-        setSupportActionBar(tbHeader);
-        //tbSubtitle.setText(tb.getSubtitle());
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //tb.setSubtitle("0 0");
+            setToolbarScore();
+            setSupportActionBar(tbHeader);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
 
+    public void makeMove()
+    {
+        if (!tryToCreateLine(_source, _lastDestination)) {
+            if (!checkIfShotPossible(_source, _lastDestination)) {
+                if (toast != null)
+                    toast.cancel();
+                if (_lastDestination == _source)
+                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_SelectNextFieldError), Toast.LENGTH_LONG);
+                else
+                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_TooLongPassError), Toast.LENGTH_LONG);
+                toast.show();
+                _lastDestination = _destination;
+            }
+        } else {
+            if (checkIfShotPossible(_source, _lastDestination)) {
+                _destination = _lastDestination;
+                if (drawLine(_source, _destination)) {
+                    canDelete = true;
+                    playerAccepted = false;
+                    pilka.setX(_destination.getLeft() + _destination.getWidth() / 4);
+                    pilka.setY(_destination.getTop() + _destination.getHeight() / 4);
+                    pilka.bringToFront();
+                    pilka.invalidate();
+
+                    if (!doShowAcceptButton)
+                        acceptMove.performClick();
+                }
+            } else {
+                if (toast != null)
+                    toast.cancel();
+                toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_InvalidDirectionError), Toast.LENGTH_LONG);
+                toast.show();
+            }
+        }
+    }
+
+    public boolean isMyTurn()
+    {
+        if ((imFirstPlayer) && (player1.isMove()))
+            return true;
+        else if ((!imFirstPlayer) && (player2.isMove()))
+            return true;
+        else
+            return false;
     }
 
     @Override
@@ -483,14 +518,27 @@ public class Game extends AppCompatActivity {
         {
             if (toast != null)
                 toast.cancel();
-           toast = Toast.makeText(this,res.getString(R.string.pl_MakeMoveFirstError), Toast.LENGTH_SHORT);
-           toast.show();
+            toast = Toast.makeText(this, res.getString(R.string.pl_MakeMoveFirstError), Toast.LENGTH_SHORT);
+
+            switch (gameMode)
+            {
+                case LOCAL:
+                    toast.show();
+                    break;
+                case BLUETOOTH:
+                    if (isMyTurn())
+                        toast.show();
+                    break;
+            }
         }
 
         else
         {
             if ((_source == null) || (_destination == null))
                 return false;
+
+            if (gameMode == BLUETOOTH)
+                sendMessage(String.valueOf(_destination.getId()) + ":move");
 
             int[][] srcShots = listFields.get(_source.getId()).getShots();
             int[][] dstShots = listFields.get(_destination.getId()).getShots();
@@ -529,7 +577,6 @@ public class Game extends AppCompatActivity {
                 }
                 else
                 {
-                    vibrator.vibrate(150);
                     player1.setMove(player2.isMove());
                     player2.setMove(!player1.isMove());
                 }
@@ -551,10 +598,18 @@ public class Game extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.tvWhoMoves);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
         if (player1.isMove())
+        {
+            if ((imFirstPlayer) && (gameMode == BLUETOOTH))
+                vibrator.vibrate(150);
             tv.setText("Ruch gracza, " + player1.getName());
-        else
+        }
+        else {
+            if ((!imFirstPlayer) && (gameMode == BLUETOOTH))
+                vibrator.vibrate(150);
             tv.setText("Ruch gracza, " + player2.getName());
+        }
     }
+
 
     public boolean checkIfShotPossible(ImageView source, ImageView destination)
     {
@@ -870,6 +925,18 @@ public class Game extends AppCompatActivity {
             drawLine(listViews.get(fieldID[i]), listViews.get(fieldID[i+1]));
 
         blockMoveOutsideField();
+    }
+
+    public void sendMessage(String message)
+    {
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mBluetoothConnectionService.write(send);
+
+            // Reset out string buffer to zero and clear the edit text field
+            mOutStringBuffer.setLength(0);
+        }
     }
 
 }

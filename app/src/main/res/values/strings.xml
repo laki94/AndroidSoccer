@@ -36,6 +36,7 @@
     <string name="pl_MakeMoveFirstError">Najpierw należy wykonać ruch</string>
     <string name="pl_WhitespaceError">Nie używaj białych znaków</string>
     <string name="pl_NameOverMaxEms">Nazwa gracza nie może przekraczać %1$d znaków</string>
+    <string name="pl_NotYourTurnError">To nie twoja tura</string>
 
     <!--  BluetoothChat -->
     <string name="send">Send</string>

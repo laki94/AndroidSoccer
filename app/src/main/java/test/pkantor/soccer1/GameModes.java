@@ -39,7 +39,7 @@ public class GameModes extends AppCompatActivity{
     {
         final Intent intent = new Intent(this, Game.class);
 
-        intent.putExtra("mode", 0);
+        intent.putExtra("gameMode", Game.LOCAL);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View mView = getLayoutInflater().inflate(R.layout.activity_dialog_setnames, null);
@@ -98,7 +98,6 @@ public class GameModes extends AppCompatActivity{
                 intent.putExtra("goalPoints", np.getValue());
                 startActivity(intent);
             }
-//                    Toast.makeText(GameModes.this, "blbelel", Toast.LENGTH_SHORT).show()
         });
 
         builder.setView(mView);

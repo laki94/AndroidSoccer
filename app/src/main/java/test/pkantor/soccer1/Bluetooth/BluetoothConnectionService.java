@@ -54,7 +54,16 @@ public class BluetoothConnectionService {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mNewState = mState = STATE_NONE;
         mHandler = handler;
-       // start(); // TODO tego ni ma
+    }
+
+    public Handler getHandler()
+    {
+        return mHandler;
+    }
+
+    public void setHandler(Handler handler)
+    {
+        mHandler = handler;
     }
 
     private synchronized void updateUserInterfaceTitle() {
