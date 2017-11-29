@@ -763,22 +763,28 @@ public class Game extends AppCompatActivity {
                     }
 
 
+        if (possibleMoves <= 2) {
+            if (player1.isMove())
+                player2.addPoint();
+            else
+                player1.addPoint();
+        }
+
 
         Intent intent = new Intent(this, GameOver.class);
 
-        if ((isGoal) || (isOwnGoal))
-            if (player1.getPoints() == goalPointsToWin)
-            {
-                //intent.putExtra("goal", 0);
-                intent.putExtra("winner", player1.getName());
-                startActivity(intent);
-            }
-            else if (player2.getPoints() == goalPointsToWin)
-            {
-               // intent.putExtra("goal", 1);
-                intent.putExtra("winner", player2.getName());
-                startActivity(intent);
-            }
+        if (player1.getPoints() == goalPointsToWin)
+        {
+            //intent.putExtra("goal", 0);
+            intent.putExtra("winner", player1.getName());
+            startActivity(intent);
+        }
+        else if (player2.getPoints() == goalPointsToWin)
+        {
+            // intent.putExtra("goal", 1);
+            intent.putExtra("winner", player2.getName());
+            startActivity(intent);
+        }
 
         if (player1.isMove())
         {
@@ -796,6 +802,7 @@ public class Game extends AppCompatActivity {
 
         }
         else if (player2.isMove())
+        {
             if (isOwnGoal)
             {
                 startNewGame(player1, player2);
@@ -806,6 +813,7 @@ public class Game extends AppCompatActivity {
                 startNewGame(player2, player1);
                 return true;
             }
+        }
 
         if (possibleMoves <= 2)
         {
