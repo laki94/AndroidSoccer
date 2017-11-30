@@ -46,4 +46,10 @@
     <string name="connection_lost">Utracono połączenie</string>
     <string name="enable_vibrations">Wibracje</string>
     <string name="surrender">Poddaj się</string>
+    <string name="none_paired">Nie ma sparowanych urządzeń</string>
+    <string name="none_found">Nie znaleziono urządzeń</string>
+    <string name="title_paired_devices">Sparowane urządzenia</string>
+    <string name="title_other_devices">Inne dostępne urządzenia</string>
+    <string name="button_scan">Skanuj</string>
+    <string name="discoverable">Włącz wykrywalność</string>
 </resources>

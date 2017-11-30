@@ -7,10 +7,12 @@ package test.pkantor.soccer1.Bluetooth;
 import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
@@ -32,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
@@ -43,7 +46,7 @@ import test.pkantor.soccer1.R;
 public class BluetoothMainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private static final String TAG = "MainActivity";
 
-    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1; // TODO wylaczyc okno wyboru polaczenia jesli ktos sie laczy
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
 
@@ -57,12 +60,9 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
 
     Button btnStartConnection;
     Button btnSend;
-    Button bFindUnpairedDevices;
-//    Button btnScan;
 
     EditText etSend;
     EditText mInEditText;
-    EditText mOutEditText;
 
     AlertDialog dialog;
     Resources res;
@@ -81,8 +81,6 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
 
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
     public ArrayAdapter<String> mBTDevicesAdapter = null;
-
-    public DeviceListAdapter mDeviceListAdapter;
 
     ListView lvNewDevices;
 
@@ -333,7 +331,6 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
         btnStartConnection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // imFirstPlayer = true;
                 Intent serverIntent = new Intent(getApplicationContext(), DeviceListActivity.class);
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
             }

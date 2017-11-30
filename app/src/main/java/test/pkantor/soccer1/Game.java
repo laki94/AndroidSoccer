@@ -109,7 +109,9 @@ public class Game extends AppCompatActivity {
                 public void onClick(View v) {
                     dialog.dismiss();
                     finish();
-                    System.exit(0);
+                    Intent intent = new Intent(getApplicationContext(), Menu.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
                 }
             });
             bNo.setOnClickListener(new View.OnClickListener()
@@ -246,6 +248,11 @@ public class Game extends AppCompatActivity {
             iSurrender.setEnabled(false);
             bSurrender.setEnabled(false);
         }
+        else
+        {
+            iSurrender.setEnabled(true);
+            bSurrender.setEnabled(true);
+        }
     }
 
 
@@ -257,6 +264,7 @@ public class Game extends AppCompatActivity {
 
         setContentView(activity_game);
 
+
         TextView g1 = (TextView) findViewById(R.id.tvPlayer1);
         TextView g2 = (TextView) findViewById(R.id.tvPlayer2);
         tbHeader = (android.support.v7.widget.Toolbar) findViewById(R.id.tbGame);
@@ -265,7 +273,6 @@ public class Game extends AppCompatActivity {
         res = getResources();
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        prepareDrawer();
         mOutStringBuffer = new StringBuffer("");
 
         gSocket = (GlobalSocket) getApplicationContext();
@@ -278,6 +285,10 @@ public class Game extends AppCompatActivity {
         listLinie = new ArrayList<>();
         listFields = new ArrayList<>();
         lay = (FrameLayout) findViewById(R.id.FLlay);
+
+        setSettings();
+        prepareDrawer();
+
         lay.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -344,6 +355,31 @@ public class Game extends AppCompatActivity {
 
 
 //        Bundle extras = getIntent().getExtras();
+
+
+            g1.bringToFront();
+            g2.bringToFront();
+            g1.setWidth(countX * 4);
+            g2.setWidth(countX * 4);
+
+            g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
+            g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
+
+            g1.setText(player1.getName());
+            g2.setText(player2.getName());
+            g1.setX((countX * 7) - countX / 3);
+            g1.setY((countX * 12) - countX / 3);
+            g2.setX((countX * 7) - countX / 3);
+            g2.setY((countX * 1) - countX / 3);
+
+            setToolbarScore();
+            setSupportActionBar(tbHeader);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+    public void setSettings()
+    {
         Intent prevIntent = getIntent();
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, prevIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -429,27 +465,7 @@ public class Game extends AppCompatActivity {
 
             goalPointsToWin = 1;
         }
-
-            g1.bringToFront();
-            g2.bringToFront();
-            g1.setWidth(countX * 4);
-            g2.setWidth(countX * 4);
-
-            g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
-            g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
-
-            g1.setText(player1.getName());
-            g2.setText(player2.getName());
-            g1.setX((countX * 7) - countX / 3);
-            g1.setY((countX * 12) - countX / 3);
-            g2.setX((countX * 7) - countX / 3);
-            g2.setY((countX * 1) - countX / 3);
-
-            setToolbarScore();
-            setSupportActionBar(tbHeader);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+    }
 
 
     public boolean makeMove()

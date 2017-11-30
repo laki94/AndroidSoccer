@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import test.pkantor.soccer1.Bluetooth.BluetoothMainActivity;
+import test.pkantor.soccer1.Bluetooth.DeviceListActivity;
 
 public class GameModes extends AppCompatActivity{
 
@@ -31,7 +32,7 @@ public class GameModes extends AppCompatActivity{
 
     public void clickPlayBluetooth(View v)
     {
-        Intent intent = new Intent(this, BluetoothMainActivity.class);
+        Intent intent = new Intent(this, DeviceListActivity.class);
         startActivity(intent);
     }
 

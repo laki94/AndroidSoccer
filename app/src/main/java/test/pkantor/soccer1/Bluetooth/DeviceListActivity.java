@@ -4,25 +4,43 @@ package test.pkantor.soccer1.Bluetooth;
  * Created by Pawel on 20.11.2017.
  */
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.UUID;
 
+import test.pkantor.soccer1.DialogExit;
+import test.pkantor.soccer1.Game;
+import test.pkantor.soccer1.GlobalSocket;
+import test.pkantor.soccer1.Menu;
 import test.pkantor.soccer1.R;
 
 /**
@@ -52,6 +70,66 @@ public class DeviceListActivity extends Activity {
      * Newly discovered devices
      */
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
+
+    private static final UUID MY_UUID_INSECURE =
+            UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+
+    BluetoothAdapter mBluetoothAdapter;
+    BluetoothConnectionService mBluetoothConnectionService = null;
+    StringBuffer mOutStringBuffer;
+    private String mConnectedDeviceName = null;
+    BluetoothDevice mBTDevice;
+    public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
+    public ArrayAdapter<String> mBTDevicesAdapter = null;
+    ProgressDialog mProgressDialog;
+    String player1Name;
+    String player2Name;
+    String goalPoints;
+    AlertDialog dialog;
+    Resources res;
+    boolean imFirstPlayer = false;
+    boolean imReady = false;
+    boolean secondPlayerReady = false;
+    Button btnEnableDisable_Discoverable;
+    GlobalSocket gSocket;
+
+    @Override
+    public void onBackPressed()
+    {
+        if (mBluetoothConnectionService != null)
+            mBluetoothConnectionService.stop();
+        System.exit(0);
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        if (!mBluetoothAdapter.isEnabled())
+        {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, 3);
+        }
+        else if (mBluetoothConnectionService == null)
+            setupConnectionService();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        imFirstPlayer = false;
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mBluetoothConnectionService != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mBluetoothConnectionService.getState() == BluetoothConnectionService.STATE_NONE) {
+                // Start the Bluetooth chat services
+                mBluetoothConnectionService.start();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +191,50 @@ public class DeviceListActivity extends Activity {
             String noDevices = getResources().getText(R.string.none_paired).toString();
             pairedDevicesArrayAdapter.add(noDevices);
         }
+
+
+        res = getResources();
+        btnEnableDisable_Discoverable = (Button) findViewById(R.id.btnDiscoverable_on_off);
+        mBTDevices = new ArrayList<>();
+        mBTDevicesAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.device_name);
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        btnEnableDisable_Discoverable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ensureDiscoverable();
+            }
+        });
+
+        if (mBluetoothAdapter == null)
+        {
+            this.finish();
+        }
+
+        gSocket = (GlobalSocket) getApplicationContext();
+        dialog = null;
+    }
+
+    private void connectDevice(Intent data) {
+        // Get the device MAC address
+        String address = data.getExtras()
+                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+
+        imFirstPlayer = true;
+        // Get the BluetoothDevice object
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+
+        // Attempt to connect to the device
+        mBluetoothConnectionService.connect(device, MY_UUID_INSECURE);
+    }
+
+    private void ensureDiscoverable() {
+        if (mBluetoothAdapter.getScanMode() !=
+                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
+        }
     }
 
     @Override
@@ -124,8 +246,18 @@ public class DeviceListActivity extends Activity {
             mBtAdapter.cancelDiscovery();
         }
 
+        if (dialog != null)
+            dialog.dismiss();
         // Unregister broadcast listeners
         this.unregisterReceiver(mReceiver);
+    }
+
+
+    private void setupConnectionService()
+    {
+        mBluetoothConnectionService = new BluetoothConnectionService(getApplicationContext(), mHandler);
+
+        mOutStringBuffer = new StringBuffer("");
     }
 
     /**
@@ -166,11 +298,12 @@ public class DeviceListActivity extends Activity {
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            connectDevice(intent);
 //            intent.putExtra("firstPlayer", true);
 
             // Set result and finish this Activity
-            setResult(Activity.RESULT_OK, intent);
-            finish();
+            //setResult(Activity.RESULT_OK, intent);
+            //finish();
         }
     };
 
@@ -202,4 +335,265 @@ public class DeviceListActivity extends Activity {
             }
         }
     };
+
+    private void setStatus(int resId) {
+        if (null == getApplicationContext()) {
+            return;
+        }
+        final ActionBar actionBar = this.getActionBar();
+        if (null == actionBar) {
+            return;
+        }
+        actionBar.setSubtitle(resId);
+    }
+
+    private void setStatus(CharSequence subTitle) {
+        if (null == getApplicationContext()) {
+            return;
+        }
+        final ActionBar actionBar = this.getActionBar();
+        if (null == actionBar) {
+            return;
+        }
+        actionBar.setSubtitle(subTitle);
+    }
+
+    public void showSetNames()
+    {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        View mView = getLayoutInflater().inflate(R.layout.activity_dialog_setnames, null);
+        final EditText p1Name = (EditText) mView.findViewById(R.id.etFirstPlayerName);
+        final EditText p2Name = (EditText) mView.findViewById(R.id.etSecondPlayerName);
+        Button saveNames = (Button) mView.findViewById(R.id.bSaveNames);
+
+        TextView tvP1Name = (TextView) mView.findViewById(R.id.tvFirstPlayerName);
+        TextView tvP2Name = (TextView) mView.findViewById(R.id.tvSecondPlayerName);
+
+        tvP1Name.setText(R.string.EnterYourName);
+        tvP2Name.setText(R.string.EnterYourName);
+
+        final NumberPicker np = (NumberPicker) mView.findViewById(R.id.np);
+        np.setMinValue(1);
+        np.setMaxValue(9);
+        np.setWrapSelectorWheel(true);
+
+        p1Name.setFilters(new InputFilter[]
+                {
+                        new InputFilter() {
+                            public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
+                            {
+                                if (src.toString().matches("[a-zA-Z]+"))
+                                    return src;
+                                return "";
+                            }
+                        },
+                        new InputFilter.LengthFilter(9)
+                });
+
+        p2Name.setFilters(new InputFilter[]
+                {
+                        new InputFilter() {
+                            public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
+                            {
+
+                                if (src.toString().matches("[a-zA-Z]+"))
+                                    return src;
+                                return "";
+                            }
+                        },
+                        new InputFilter.LengthFilter(9)
+                });
+
+        saveNames.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v)
+            {
+                dialog.dismiss();
+
+                mProgressDialog = ProgressDialog.show(DeviceListActivity.this, res.getString(R.string.waiting_for_other_player), res.getString(R.string.please_wait), true);
+
+                imReady = true;
+
+                if (imFirstPlayer)
+                {
+//                    if (p1Name.getText().length() != 0)
+//                        player1Name = res.getString(R.string.pl_DefaultPlayer1);
+//                    else
+                    player1Name = p1Name.getText().toString();
+                    if (player1Name.equals(""))
+                        player1Name = res.getString(R.string.DefaultPlayer1);
+
+                    goalPoints = String.valueOf(np.getValue());
+                }
+                else
+                {
+                    player2Name = p2Name.getText().toString();
+                    if (player2Name.equals(""))
+                        player2Name = res.getString(R.string.DefaultPlayer2);
+                }
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("handler", "sending message");
+                        String message;
+                        if (imFirstPlayer)
+                            message = player1Name + ":" + goalPoints;
+                        else
+                            message = player2Name;
+
+                        message += ":ready";
+                        sendMessage(message);
+                    }
+                }, 1000);
+
+
+                if ((imReady) && (secondPlayerReady))
+                    startGame();
+
+            }
+//                    Toast.makeText(GameModes.this, "blbelel", Toast.LENGTH_SHORT).show()
+        });
+
+        builder.setView(mView);
+        dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+
+        if (imFirstPlayer)
+        {
+            mView.findViewById(R.id.tvSecondPlayerName).setVisibility(View.GONE);
+            ((EditText) mView.findViewById(R.id.etFirstPlayerName)).setText(res.getString(R.string.EnterYourName));
+            p2Name.setVisibility(View.GONE);
+        }
+        else
+        {
+            mView.findViewById(R.id.tvFirstPlayerName).setVisibility(View.GONE);
+            p1Name.setVisibility(View.GONE);
+            mView.findViewById(R.id.tvGoalPoints).setVisibility(View.GONE);
+            ((EditText) mView.findViewById(R.id.etSecondPlayerName)).setText(res.getString(R.string.EnterYourName));
+            np.setVisibility(View.GONE);
+        }
+        dialog.show();
+    }
+
+    public void startGame()
+    {
+        Intent intent = new Intent(this, Game.class);
+
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
+
+        GlobalSocket gSocket = (GlobalSocket) getApplicationContext();
+        gSocket.setBluetoothConnectionService(mBluetoothConnectionService);
+        gSocket.setBluetoothHandler(mBluetoothConnectionService.getHandler());
+
+
+        if (imFirstPlayer)
+            intent.putExtra("amIFirst", imFirstPlayer);
+        intent.putExtra("p1Name", player1Name);
+        intent.putExtra("p2Name", player2Name);
+        intent.putExtra("goalPoints", Integer.valueOf(goalPoints));
+        intent.putExtra("gameMode", Game.BLUETOOTH);
+        startActivity(intent);
+    }
+
+    private void sendMessage(String message) {
+        // Check that we're actually connected before trying anything
+        if (mBluetoothConnectionService.getState() != BluetoothConnectionService.STATE_CONNECTED) {
+            Toast.makeText(getApplicationContext(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mBluetoothConnectionService.write(send);
+
+            // Reset out string buffer to zero and clear the edit text field
+            mOutStringBuffer.setLength(0);
+        }
+    }
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    switch (msg.arg1) {
+                        case BluetoothConnectionService.STATE_CONNECTED:
+                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName)); // TODO connected
+                            mBTDevicesAdapter.clear();
+                            if (mBluetoothConnectionService.mState == 3)
+                                showSetNames();
+                            else
+                                Toast.makeText(getApplicationContext(), "cos sie popsulo", Toast.LENGTH_LONG).show();
+
+                            break;
+                        case BluetoothConnectionService.STATE_CONNECTING:
+                            setStatus(R.string.title_connecting);
+                            break;
+                        case BluetoothConnectionService.STATE_LISTEN:
+                            break;
+                        case BluetoothConnectionService.STATE_NONE:
+                            setStatus(R.string.title_not_connected);
+                            imFirstPlayer = false;
+                            break;
+                    }
+                    break;
+                case 3:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    mBTDevicesAdapter.add("Me:  " + writeMessage);
+                    break;
+                case 2:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    mBTDevicesAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+
+                    checkIfPlayerReady(readMessage);
+                    break;
+                case 4:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString("device_name");
+                    if (null != getApplicationContext()) {
+                        Toast.makeText(getApplicationContext(), "Connected to "
+                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case 5:
+                    if (null != getApplicationContext()) {
+                        Toast.makeText(getApplicationContext(), msg.getData().getString("toast"),
+                                Toast.LENGTH_SHORT).show();
+                        if (!gSocket.getAmIConnected())
+                            if (mProgressDialog != null)
+                                mProgressDialog.dismiss();
+                    }
+                    break;
+            }
+        }
+    };
+
+    public void checkIfPlayerReady(String msg)
+    {
+        StringTokenizer tokenizer = new StringTokenizer(msg, ":");
+
+        if (imFirstPlayer)
+            player2Name = tokenizer.nextToken();
+        else
+        {
+            player1Name = tokenizer.nextToken();
+            goalPoints = tokenizer.nextToken();
+        }
+
+        if (tokenizer.nextToken().equals("ready"))
+            secondPlayerReady = true;
+
+        if ((imReady) && (secondPlayerReady))
+            startGame();
+    }
 }
