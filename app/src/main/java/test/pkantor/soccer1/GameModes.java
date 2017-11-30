@@ -88,12 +88,12 @@ public class GameModes extends AppCompatActivity{
                 if (p1Name.getText().length() != 0)
                     intent.putExtra("p1Name", p1Name.getText().toString());
                 else
-                    intent.putExtra("p1Name", res.getString(R.string.pl_DefaultPlayer1));
+                    intent.putExtra("p1Name", res.getString(R.string.DefaultPlayer1));
 
                 if (p2Name.getText().length() != 0)
                     intent.putExtra("p2Name", p2Name.getText().toString());
                 else
-                    intent.putExtra("p2Name", res.getString(R.string.pl_DefaultPlayer2));
+                    intent.putExtra("p2Name", res.getString(R.string.DefaultPlayer2));
 
                 intent.putExtra("goalPoints", np.getValue());
                 startActivity(intent);

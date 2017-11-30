@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="@string/pl_bOnOff"/>
+        android:text="@string/bOnOff"/>
 
     <Button
         android:id="@+id/btnDiscoverable_on_off"
@@ -23,14 +23,14 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:onClick="btnEnableDisable_Discoverable"
-        android:text="@string/pl_bDiscoverable"/>
+        android:text="@string/bDiscoverable"/>
 
     <Button
         android:id="@+id/btnFindUnpairedDevices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="btnDiscover"
-        android:text="@string/pl_bDiscover"/>
+        android:text="@string/bDiscover"/>
 
     <ListView
         android:layout_below="@+id/btnStartConnection"
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/btnFindUnpairedDevices"
-        android:text="@string/pl_bStartConnection"/>
+        android:text="@string/bStartConnection"/>
 
     <EditText
         android:layout_width="250dp"

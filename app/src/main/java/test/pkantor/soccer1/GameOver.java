@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import test.pkantor.soccer1.R;
-
 public class GameOver extends AppCompatActivity {
 
     @Override
@@ -41,7 +39,7 @@ public class GameOver extends AppCompatActivity {
         {
             case 0:
                 Resources resources = getResources();
-                tv.setText(resources.getString(R.string.pl_WinnerIs, winner));
+                tv.setText(resources.getString(R.string.WinnerIs, winner));
                 break;
 //            case 1:
 //                tv.setText("Wygrywa " + winner);

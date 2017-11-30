@@ -17,6 +17,8 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
+import test.pkantor.soccer1.GlobalSocket;
+
 /**
  * Created by User on 12/21/2016.
  */
@@ -495,6 +497,9 @@ public class BluetoothConnectionService {
         updateUserInterfaceTitle();
 
         // Start the service over to restart listening mode
+        GlobalSocket gSocket = (GlobalSocket) mContext;
+        gSocket.setAmIConnected(false);
+
         BluetoothConnectionService.this.start();
     }
 

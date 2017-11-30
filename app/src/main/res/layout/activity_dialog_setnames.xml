@@ -24,7 +24,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:gravity="center"
-        android:hint="@string/pl_DefaultPlayer1"
+        android:hint="@string/DefaultPlayer1"
         android:inputType="textNoSuggestions"/>
 
     <TextView
@@ -45,7 +45,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:gravity="center"
-        android:hint="@string/pl_DefaultPlayer2"
+        android:hint="@string/DefaultPlayer2"
         android:inputType="textNoSuggestions" />
 
     <TextView
@@ -53,7 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/pl_tvGoalPoints"
+        android:text="@string/tvGoalPoints"
         android:gravity="center_horizontal"
         android:layout_gravity="center_horizontal"
         android:textSize="18sp"

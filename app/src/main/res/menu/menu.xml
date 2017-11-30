@@ -10,4 +10,15 @@
         android:title="@string/cbShowPlayers"
         app:actionViewClass="android.widget.CheckBox"/>
 
+    <item
+        android:id="@+id/nav_EnableVibrations"
+        android:title="@string/enable_vibrations"
+        app:actionViewClass="android.widget.CheckBox"/>
+
+    <item
+        android:id="@+id/nav_Surrender"
+        android:title="@string/surrender"
+        app:actionViewClass="android.widget.Button"/>
+
+
 </menu>

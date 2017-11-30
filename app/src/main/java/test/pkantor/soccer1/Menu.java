@@ -1,5 +1,6 @@
 package test.pkantor.soccer1;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +16,32 @@ public class Menu extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.activity_dialog_exit, null);
+        builder.setView(mView);
+        final AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
 
+        Button bYes = (Button) mView.findViewById(R.id.bYes);
+        Button bNo = (Button) mView.findViewById(R.id.bNo);
+
+        bYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                finish();
+                System.exit(0);
+            }
+        });
+        bNo.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
 

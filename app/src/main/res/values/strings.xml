@@ -3,45 +3,16 @@
 <string name="app_name">Soccer1</string>
 
     <!-- MultiLanguage -->
-    <string name="score">%1$s %2$d : %3$d %4$s</string>
+    <string name="firstPlayerName">Enter first player name</string>
+    <string name="score" translatable="false">%1$s %2$d : %3$d %4$s</string>
 
     <!-- Polish -->
-    <string name="firstPlayerName">Podaj nazwę pierwszego gracza</string>
-    <string name="secondPlayerName">Podaj nazwę drugiego gracza</string>
-    <string name="buttonSave">Zapisz</string>
-    <string name="buttonPlayLocal">Graj lokalnie</string>
-    <string name="buttonPlayBluetooth">Graj przez bluetooth</string>
-    <string name="buttonPlayNet">Graj przez internet</string>
-    <string name="buttonAcceptMove">Akceptuj ruch</string>
-    <string name="whoMoves">Ruch gracza, </string>
-    <string name="doYouWantToExit">Czy na pewno chcesz wyjść?</string>
-    <string name="bYes">Tak</string>
-    <string name="bNo">Nie</string>
-    <string name="bPlay">Graj</string>
-    <string name="bOptions">Opcje</string>
-    <string name="bQuit">Wyjdź</string>
-    <string name="cbShowAcceptMove">Przycisk akceptacji ruchu</string>
-    <string name="cbShowPlayers">Nazwy graczy</string>
-    <string name="pl_tvGoalPoints">Ilość bramek do zwycięstwa</string>
-    <string name="pl_bDiscover">Skanuj</string>
-    <string name="pl_bDiscoverable">Włącz wykrywalność</string>
-    <string name="pl_bOnOff">On/Off</string>
-    <string name="pl_bStartConnection">Połącz</string>
-    <string name="pl_WinnerIs">Wygrywa, %1$s</string>
-    <string name="pl_DefaultPlayer1">Gracz 1</string>
-    <string name="pl_DefaultPlayer2">Gracz 2</string>
-    <string name="pl_SelectNextFieldError">Wcisnij pole swojego następnego ruchu</string>
-    <string name="pl_TooLongPassError">Zbyt dlugi ruch</string>
-    <string name="pl_InvalidDirectionError">Ruch w tym kierunku jest niedozwolony</string>
-    <string name="pl_MakeMoveFirstError">Najpierw należy wykonać ruch</string>
-    <string name="pl_WhitespaceError">Nie używaj białych znaków</string>
-    <string name="pl_NameOverMaxEms">Nazwa gracza nie może przekraczać %1$d znaków</string>
-    <string name="pl_NotYourTurnError">To nie twoja tura</string>
+    <string name="bOnOff" translatable="false">On/Off</string>
 
     <!--  BluetoothChat -->
     <string name="send">Send</string>
     <string name="not_connected">You are not connected to a device</string>
-    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Return to menu.</string>
     <string name="title_connecting">connecting...</string>
     <string name="title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="title_not_connected">not connected</string>
@@ -59,5 +30,41 @@
     <string name="secure_connect">Connect a device - Secure</string>
     <string name="insecure_connect">Connect a device - Insecure</string>
     <string name="discoverable">Make discoverable</string>
+    <string name="secondPlayerName">Enter second player name</string>
+    <string name="buttonSave">Save</string>
+    <string name="buttonPlayLocal">Play on this device</string>
+    <string name="buttonPlayBluetooth">Play via Bluetooth</string>
+    <string name="buttonPlayNet">Play via Internet</string>
+    <string name="buttonAcceptMove">Accept move</string>
+    <string name="whoMoves">"Now moves, "</string>
+    <string name="doYouWantToExit">Do you want to exit?</string>
+    <string name="bYes">Yes</string>
+    <string name="bNo">No</string>
+    <string name="bPlay">Play</string>
+    <string name="bOptions">Options</string>
+    <string name="bQuit">Exit</string>
+    <string name="cbShowAcceptMove">Accept move button</string>
+    <string name="cbShowPlayers">Player names</string>
+    <string name="tvGoalPoints">Goal points to win</string>
+    <string name="bDiscover">Scan</string>
+    <string name="bDiscoverable">Enable discoverable</string>
+    <string name="bStartConnection">Connect with</string>
+    <string name="WinnerIs">%1$s, won</string>
+    <string name="DefaultPlayer1">Player 1</string>
+    <string name="DefaultPlayer2">Player 2</string>
+    <string name="SelectNextFieldError">In order to move select field first</string>
+    <string name="TooLongPassError">Wrong move - too long</string>
+    <string name="InvalidDirectionError">Move in this direction is impossible</string>
+    <string name="MakeMoveFirstError">Make move first</string>
+    <string name="WhitespaceError">Do not use whitespaces</string>
+    <string name="NameOverMaxEms">Player name cannot be over %1$s characters long</string>
+    <string name="NotYourTurnError">It is not your turn</string>
+    <string name="EnterYourName">Enter your name</string>
+    <string name="PlayerMoves">Now moves, %1$s</string>
+    <string name="waiting_for_other_player">Waiting for other player</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="connection_lost">Connection lost</string>
+    <string name="enable_vibrations">Vibrations</string>
+    <string name="surrender">Surrender</string>
 
 </resources>

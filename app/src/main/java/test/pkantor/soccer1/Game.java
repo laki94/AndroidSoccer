@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -25,13 +24,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Vibrator;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import test.pkantor.soccer1.Bluetooth.BluetoothConnectionService;
-import test.pkantor.soccer1.Bluetooth.BluetoothMainActivity;
 
 import static java.lang.Math.round;
 import static test.pkantor.soccer1.R.layout.activity_game;
@@ -55,6 +52,7 @@ public class Game extends AppCompatActivity {
     boolean canDelete = false;
     boolean doShowAcceptButton = true;
     boolean doShowPlayerNames = true;
+    boolean doEnableVibrations = true;
     boolean newGame = false;
     boolean imFirstPlayer = false;
 
@@ -75,6 +73,9 @@ public class Game extends AppCompatActivity {
     Button acceptMove;
     CheckBox cbAcceptMove = null;
     CheckBox cbShowNames = null;
+    CheckBox cbEnableVibrations = null;
+    Button bSurrender = null;
+
     android.support.v7.widget.Toolbar tbHeader;
     TextView tvScore;
 
@@ -82,6 +83,7 @@ public class Game extends AppCompatActivity {
     BluetoothConnectionService mBluetoothConnectionService;
     Handler mHandler;
     StringBuffer mOutStringBuffer;
+    GlobalSocket gSocket;
 
 
     @Override
@@ -130,6 +132,8 @@ public class Game extends AppCompatActivity {
 
         final MenuItem iAcceptMove = menu.findItem(R.id.nav_AcceptMove);
         final MenuItem iShowNames = menu.findItem(R.id.nav_ShowPlayers);
+        final MenuItem iEnableVibrations = menu.findItem(R.id.nav_EnableVibrations);
+        final MenuItem iSurrender = menu.findItem(R.id.nav_Surrender);
 
         iAcceptMove.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -149,11 +153,32 @@ public class Game extends AppCompatActivity {
             }
         });
 
+        iEnableVibrations.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                CheckBox cb = (CheckBox) item.getActionView();
+                cb.setChecked(!cb.isChecked());
+                return false;
+            }
+        });
+
+        iSurrender.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Button button = (Button) item.getActionView();
+                button.performClick();
+                return false;
+            }
+        });
+
         cbAcceptMove = (CheckBox) iAcceptMove.getActionView();
         cbShowNames = (CheckBox) iShowNames.getActionView();
+        cbEnableVibrations = (CheckBox) iEnableVibrations.getActionView();
+        bSurrender = (Button) iSurrender.getActionView();
 
         cbAcceptMove.setChecked(true);
         cbShowNames.setChecked(true);
+        cbEnableVibrations.setChecked(true);
 
         cbAcceptMove.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -186,6 +211,41 @@ public class Game extends AppCompatActivity {
                 }
             }
         });
+
+        cbEnableVibrations.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                doEnableVibrations = isChecked;
+            }
+        });
+
+        bSurrender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage("surrender");
+
+                if (imFirstPlayer)
+                {
+                    player2.addPoint();
+                    if (!checkIfPointsGained())
+                        startNewGame(player2, player1);
+                }
+
+                else
+                {
+                    player1.addPoint();
+                    if (!checkIfPointsGained())
+                        startNewGame(player1, player2);
+                }
+
+            }
+        });
+
+        if (gameMode == LOCAL)
+        {
+            iSurrender.setEnabled(false);
+            bSurrender.setEnabled(false);
+        }
     }
 
 
@@ -207,6 +267,8 @@ public class Game extends AppCompatActivity {
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         prepareDrawer();
         mOutStringBuffer = new StringBuffer("");
+
+        gSocket = (GlobalSocket) getApplicationContext();
 
         acceptMove = (Button) findViewById(R.id.acceptMove);
         player1 = new Player();
@@ -255,11 +317,15 @@ public class Game extends AppCompatActivity {
                             Log.d("DOWN", "" + pol.getId());
                             if ((isMyTurn() || gameMode == LOCAL)) {
                                 _lastDestination = (ImageView) findViewById(pol.getId());
-                                makeMove();
+
+                            if (makeMove())
+                                if (!doShowAcceptButton)
+                                    acceptMove.performClick();
+
                             } else if ((!isMyTurn()) && (gameMode == BLUETOOTH)) {
                                 if (toast != null)
                                     toast.cancel();
-                                toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_NotYourTurnError), Toast.LENGTH_LONG);
+                                toast = Toast.makeText(getApplicationContext(), res.getString(R.string.NotYourTurnError), Toast.LENGTH_LONG);
                                 toast.show();
                             }
 
@@ -290,7 +356,6 @@ public class Game extends AppCompatActivity {
             gameMode = extras.getInt("gameMode");
             imFirstPlayer = extras.getBoolean("amIFirst");
             if (gameMode == BLUETOOTH) {
-                GlobalSocket gSocket = (GlobalSocket) getApplicationContext();
                 mBluetoothConnectionService = gSocket.getBluetoothConnectionService();
                 mHandler = new Handler() {
                     @Override
@@ -310,18 +375,46 @@ public class Game extends AppCompatActivity {
                                 // construct a string from the valid bytes in the buffer
                                 String readMessage = new String(readBuf, 0, msg.arg1);
 
-                                StringTokenizer tokenizer = new StringTokenizer(readMessage, ":");
-                                if (tokenizer.countTokens() == 2) {
-                                    _lastDestination = listViews.get(Integer.parseInt(tokenizer.nextToken()));
-                                    makeMove();
-                                    if (tokenizer.nextToken().equals("move"))
+                                if (readMessage.equals("surrender"))
+                                {
+                                    if (imFirstPlayer)
                                     {
-//                                        playerAccepted = false;
-                                        acceptMove.performClick();
+                                        player1.addPoint();
+                                        if (!checkIfPointsGained())
+                                            startNewGame(player1, player2);
                                     }
+                                    else
+                                    {
+                                        player2.addPoint();
+                                        if (!checkIfPointsGained())
+                                            startNewGame(player2, player1);
+                                    }
+                                }
+                                else
+                                {
+                                    StringTokenizer tokenizer = new StringTokenizer(readMessage, ":");
+                                    if (tokenizer.countTokens() == 2) {
+                                        _lastDestination = listViews.get(Integer.parseInt(tokenizer.nextToken()));
 
+                                        makeMove();
+                                        if (tokenizer.nextToken().equals("move"))
+                                            acceptMove.performClick();
+                                    }
                                 }
                                 break;
+                            case 5:
+                                if (gameMode == BLUETOOTH)
+                                    if (!gSocket.getAmIConnected())
+                                    {
+                                        if (toast != null)
+                                            toast.cancel();
+                                        toast = Toast.makeText(getApplicationContext(), res.getString(R.string.connection_lost), Toast.LENGTH_LONG);
+                                        toast.show();
+
+                                        Intent intent = new Intent(Game.this, Menu.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        startActivity(intent);
+                                    }
 
                         }
                     }
@@ -330,9 +423,9 @@ public class Game extends AppCompatActivity {
             }
         } else {
 //            if (player1.getName().equals(""))
-            player1.setName(res.getString(R.string.pl_DefaultPlayer1));
+            player1.setName(res.getString(R.string.DefaultPlayer1));
 //            if (player2.getName().equals(""))
-            player2.setName(res.getString(R.string.pl_DefaultPlayer2));
+            player2.setName(res.getString(R.string.DefaultPlayer2));
 
             goalPointsToWin = 1;
         }
@@ -359,16 +452,16 @@ public class Game extends AppCompatActivity {
         }
 
 
-    public void makeMove()
+    public boolean makeMove()
     {
         if (!tryToCreateLine(_source, _lastDestination)) {
             if (!checkIfShotPossible(_source, _lastDestination)) {
                 if (toast != null)
                     toast.cancel();
                 if (_lastDestination == _source)
-                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_SelectNextFieldError), Toast.LENGTH_LONG);
+                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.SelectNextFieldError), Toast.LENGTH_LONG);
                 else
-                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_TooLongPassError), Toast.LENGTH_LONG);
+                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.TooLongPassError), Toast.LENGTH_LONG);
                 toast.show();
                 _lastDestination = _destination;
             }
@@ -382,17 +475,16 @@ public class Game extends AppCompatActivity {
                     pilka.setY(_destination.getTop() + _destination.getHeight() / 4);
                     pilka.bringToFront();
                     pilka.invalidate();
-
-                    if (!doShowAcceptButton)
-                        acceptMove.performClick();
+                    return true;
                 }
             } else {
                 if (toast != null)
                     toast.cancel();
-                toast = Toast.makeText(getApplicationContext(), res.getString(R.string.pl_InvalidDirectionError), Toast.LENGTH_LONG);
+                toast = Toast.makeText(getApplicationContext(), res.getString(R.string.InvalidDirectionError), Toast.LENGTH_LONG);
                 toast.show();
             }
         }
+        return false;
     }
 
     public boolean isMyTurn()
@@ -447,6 +539,7 @@ public class Game extends AppCompatActivity {
         loser.setMove(true);
 
         setToolbarScore();
+        whoMoves();
 
     }
 
@@ -518,7 +611,7 @@ public class Game extends AppCompatActivity {
         {
             if (toast != null)
                 toast.cancel();
-            toast = Toast.makeText(this, res.getString(R.string.pl_MakeMoveFirstError), Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this, res.getString(R.string.MakeMoveFirstError), Toast.LENGTH_SHORT);
 
             switch (gameMode)
             {
@@ -537,7 +630,7 @@ public class Game extends AppCompatActivity {
             if ((_source == null) || (_destination == null))
                 return false;
 
-            if (gameMode == BLUETOOTH)
+            if ((gameMode == BLUETOOTH) && (isMyTurn()))
                 sendMessage(String.valueOf(_destination.getId()) + ":move");
 
             int[][] srcShots = listFields.get(_source.getId()).getShots();
@@ -599,14 +692,19 @@ public class Game extends AppCompatActivity {
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
         if (player1.isMove())
         {
-            if ((imFirstPlayer) && (gameMode == BLUETOOTH))
-                vibrator.vibrate(150);
-            tv.setText("Ruch gracza, " + player1.getName());
+            if (doEnableVibrations)
+                if (((imFirstPlayer) && (gameMode == BLUETOOTH)) && (!player1.isAdditionalMove()))
+                    vibrator.vibrate(150);
+            String nowMoves = res.getString(R.string.PlayerMoves, player1.getName());
+            tv.setText(nowMoves);
         }
         else {
-            if ((!imFirstPlayer) && (gameMode == BLUETOOTH))
-                vibrator.vibrate(150);
-            tv.setText("Ruch gracza, " + player2.getName());
+            if (doEnableVibrations)
+                if (((!imFirstPlayer) && (gameMode == BLUETOOTH)) && (!player2.isAdditionalMove()))
+                    vibrator.vibrate(150);
+
+            String nowMoves = res.getString(R.string.PlayerMoves, player2.getName());
+            tv.setText(nowMoves);
         }
     }
 
@@ -730,16 +828,9 @@ public class Game extends AppCompatActivity {
                 if (i == fieldId)
                 {
                     if (player2.isMove())
-                    {
                         isOwnGoal = true;
-//                        player1.addPoint();
-                    }
-
                     else
-                    {
                         isGoal = true;
-//                        player2.addPoint();
-                    }
                     player1.addPoint();
                     break;
                 }
@@ -749,15 +840,9 @@ public class Game extends AppCompatActivity {
                     if (i == fieldId)
                     {
                         if (player1.isMove())
-                        {
                             isOwnGoal = true;
-//                            player2.addPoint();
-                        }
                         else
-                        {
                             isGoal = true;
-//                            player1.addPoint();
-                        }
                         player2.addPoint();
                         break;
                     }
@@ -771,64 +856,70 @@ public class Game extends AppCompatActivity {
         }
 
 
+        if (!checkIfPointsGained())
+        {
+            if (player1.isMove())
+            {
+                if (isOwnGoal)
+                {
+                    startNewGame(player2, player1);
+                    return true;
+                }
+
+                else if (isGoal)
+                {
+                    startNewGame(player1, player2);
+                    return true;
+                }
+
+            }
+            else if (player2.isMove())
+            {
+                if (isOwnGoal)
+                {
+                    startNewGame(player1, player2);
+                    return true;
+                }
+                else if (isGoal)
+                {
+                    startNewGame(player2, player1);
+                    return true;
+                }
+            }
+
+            if (possibleMoves <= 2)
+            {
+                if (player1.isMove())
+                {
+                    startNewGame(player2, player1);
+                    return true;
+                }
+                else
+                {
+                    startNewGame(player1, player2);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean checkIfPointsGained()
+    {
         Intent intent = new Intent(this, GameOver.class);
 
         if (player1.getPoints() == goalPointsToWin)
         {
-            //intent.putExtra("goal", 0);
             intent.putExtra("winner", player1.getName());
             startActivity(intent);
+            return true;
         }
         else if (player2.getPoints() == goalPointsToWin)
         {
-            // intent.putExtra("goal", 1);
             intent.putExtra("winner", player2.getName());
             startActivity(intent);
+            return true;
         }
-
-        if (player1.isMove())
-        {
-            if (isOwnGoal)
-            {
-                startNewGame(player2, player1);
-                return true;
-            }
-
-            else if (isGoal)
-            {
-                startNewGame(player1, player2);
-                return true;
-            }
-
-        }
-        else if (player2.isMove())
-        {
-            if (isOwnGoal)
-            {
-                startNewGame(player1, player2);
-                return true;
-            }
-            else if (isGoal)
-            {
-                startNewGame(player2, player1);
-                return true;
-            }
-        }
-
-        if (possibleMoves <= 2)
-        {
-            if (player1.isMove())
-            {
-                startNewGame(player2, player1);
-                return true;
-            }
-            else
-            {
-                startNewGame(player1, player2);
-                return true;
-            }
-        }
-
         return false;
     }
 

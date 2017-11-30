@@ -13,6 +13,7 @@ public class GlobalSocket extends Application {
 
     private BluetoothConnectionService mBluetoothConnectionService;
     private Handler mBluetoothHandler;
+    private boolean amIConnected = false;
 
     public BluetoothConnectionService getBluetoothConnectionService() {
         return mBluetoothConnectionService;
@@ -30,6 +31,16 @@ public class GlobalSocket extends Application {
     public Handler getBluetoothHandler()
     {
         return mBluetoothHandler;
+    }
+
+    public void setAmIConnected(boolean state)
+    {
+        amIConnected = state;
+    }
+
+    public boolean getAmIConnected()
+    {
+        return amIConnected;
     }
 
 }
