@@ -67,4 +67,16 @@
     <string name="enable_vibrations">Vibrations</string>
     <string name="surrender">Surrender</string>
 
+    <string name="preferences_soccer"></string>
+
+
+    <string name="SPdevWidth" translatable="false">devWidth</string>
+    <string name="SPdevHeight" translatable="false">devHeight</string>
+    <string name="SPcountX" translatable="false">countX</string>
+    <string name="SPcountY" translatable="false">countY</string>
+    <string name="SPshowAcceptMove" translatable="false">showAcceptMove</string>
+    <string name="SPshowPlayerNames" translatable="false">showPlayerNames</string>
+    <string name="SPenableVibrations" translatable="false">enableVibrations</string>
+    <string name="SPplayerName" translatable="false">playerName</string>
+
 </resources>

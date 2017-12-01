@@ -1,6 +1,8 @@
 package test.pkantor.soccer1;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.media.Image;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -20,9 +22,6 @@ import static java.lang.Math.sqrt;
 
 public class Line extends android.support.v7.widget.AppCompatImageView {
 
-
-    private int devWidth;
-    private int devHeight;
     private int width;
     private int height;
     private float fx;
@@ -31,13 +30,6 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
     private float sy;
     private FrameLayout.LayoutParams params;
 
-    public void calculateScreenParams()
-    {
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-
-        devHeight = displayMetrics.heightPixels;
-        devWidth = displayMetrics.widthPixels;
-    }
 
     public FrameLayout.LayoutParams getParams() {
         return params;
@@ -66,7 +58,6 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
     public Line(Context context) {
         super(context);
         this.setImageResource(R.drawable.linia);
-        calculateScreenParams();
 //        this.params = new FrameLayout.LayoutParams();
     }
 
@@ -98,6 +89,11 @@ public class Line extends android.support.v7.widget.AppCompatImageView {
 
     public boolean createLine(ImageView src, ImageView dst)
     {
+        Resources res = getResources();
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(res.getString(R.string.preferences_soccer), Context.MODE_PRIVATE);
+        int devWidth = sharedPreferences.getInt("devWidth", 1);
+        int devHeight = sharedPreferences.getInt("devHeight", 1);
+
         fx = src.getX();
         fy = src.getY();
         sx = dst.getX();

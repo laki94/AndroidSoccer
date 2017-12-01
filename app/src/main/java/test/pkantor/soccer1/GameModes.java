@@ -1,7 +1,9 @@
 package test.pkantor.soccer1;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ public class GameModes extends AppCompatActivity{
     private Player player1 = new Player();
     private Player player2 = new Player();
     private AlertDialog dialog = null;
+    SharedPreferences sharedPreferences;
 
     Resources res;
     @Override
@@ -27,6 +30,7 @@ public class GameModes extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_modes);
 
+        sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preferences_soccer), Context.MODE_PRIVATE);
         res = getResources();
     }
 
@@ -47,6 +51,8 @@ public class GameModes extends AppCompatActivity{
         final EditText p1Name = (EditText) mView.findViewById(R.id.etFirstPlayerName);
         final EditText p2Name = (EditText) mView.findViewById(R.id.etSecondPlayerName);
         Button saveNames = (Button) mView.findViewById(R.id.bSaveNames);
+
+        p1Name.setText(sharedPreferences.getString(getString(R.string.SPplayerName), getString(R.string.DefaultPlayer1)));
 
         final NumberPicker np = (NumberPicker) mView.findViewById(R.id.np);
         np.setMinValue(1);

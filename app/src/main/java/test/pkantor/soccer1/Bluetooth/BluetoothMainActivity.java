@@ -14,6 +14,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,7 +47,7 @@ import test.pkantor.soccer1.R;
 public class BluetoothMainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private static final String TAG = "MainActivity";
 
-    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1; // TODO wylaczyc okno wyboru polaczenia jesli ktos sie laczy
+    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
 
@@ -83,6 +84,7 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
     public ArrayAdapter<String> mBTDevicesAdapter = null;
 
     ListView lvNewDevices;
+    SharedPreferences sharedPreferences;
 
     @Override
     public void onStart()
@@ -323,6 +325,7 @@ public class BluetoothMainActivity extends AppCompatActivity implements AdapterV
         btnSend = (Button) findViewById(R.id.btnSend);
         etSend = (EditText) findViewById(R.id.etIn);
         res = getResources();
+
 
         mInEditText = (EditText) findViewById(R.id.etIn);
 

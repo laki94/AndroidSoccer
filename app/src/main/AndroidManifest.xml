@@ -24,6 +24,7 @@
         <activity
             android:name=".Game"
             android:screenOrientation="portrait" />
+        <activity android:name=".Options"/>
         <activity android:name=".GameOver" />
         <activity android:name=".GameModes" />
         <activity android:name=".Bluetooth.BluetoothMainActivity"/>

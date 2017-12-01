@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
@@ -50,9 +51,9 @@ public class Game extends AppCompatActivity {
     int gameMode;
     boolean playerAccepted = true;
     boolean canDelete = false;
-    boolean doShowAcceptButton = true;
-    boolean doShowPlayerNames = true;
-    boolean doEnableVibrations = true;
+    boolean doShowAcceptButton;
+    boolean doShowPlayerNames;
+    boolean doEnableVibrations;
     boolean newGame = false;
     boolean imFirstPlayer = false;
 
@@ -84,6 +85,8 @@ public class Game extends AppCompatActivity {
     Handler mHandler;
     StringBuffer mOutStringBuffer;
     GlobalSocket gSocket;
+    SharedPreferences sharedPreferences;
+
 
 
     @Override
@@ -108,6 +111,8 @@ public class Game extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     dialog.dismiss();
+                    if ((gameMode == BLUETOOTH) && (mBluetoothConnectionService != null))
+                        mBluetoothConnectionService.stop();
                     finish();
                     Intent intent = new Intent(getApplicationContext(), Menu.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -128,6 +133,8 @@ public class Game extends AppCompatActivity {
 
     public void prepareDrawer()
     {
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.navView);
         navigationView.bringToFront();
         android.view.Menu menu = navigationView.getMenu();
@@ -178,46 +185,38 @@ public class Game extends AppCompatActivity {
         cbEnableVibrations = (CheckBox) iEnableVibrations.getActionView();
         bSurrender = (Button) iSurrender.getActionView();
 
-        cbAcceptMove.setChecked(true);
-        cbShowNames.setChecked(true);
-        cbEnableVibrations.setChecked(true);
+        cbAcceptMove.setChecked(sharedPreferences.getBoolean(getString(R.string.SPshowAcceptMove), true));
+        cbShowNames.setChecked(sharedPreferences.getBoolean(getString(R.string.SPshowPlayerNames), true));
+        cbEnableVibrations.setChecked(sharedPreferences.getBoolean(getString(R.string.SPenableVibrations), true));
+
+        setVisibilityAcceptMove(cbAcceptMove.isChecked());
+        setVisibilityPlayerNames(cbShowNames.isChecked());
+        setEnabledVibrations(cbEnableVibrations.isChecked());
 
         cbAcceptMove.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                doShowAcceptButton = isChecked;
-                if (!isChecked)
-                    acceptMove.setVisibility(View.INVISIBLE);
-                else
-                    acceptMove.setVisibility(View.VISIBLE);
+                setVisibilityAcceptMove(isChecked);
+                editor.putBoolean(getString(R.string.SPshowAcceptMove), isChecked);
+                editor.apply();
             }
         });
 
         cbShowNames.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                doShowPlayerNames = isChecked;
-                TextView tvPlayer1 = (TextView) findViewById(R.id.tvPlayer1);
-                TextView tvPlayer2 = (TextView) findViewById(R.id.tvPlayer2);
-
-                if (!isChecked)
-                {
-                    tvPlayer1.setVisibility(View.INVISIBLE);
-                    tvPlayer2.setVisibility(View.INVISIBLE);
-                }
-
-                else
-                {
-                    tvPlayer1.setVisibility(View.VISIBLE);
-                    tvPlayer2.setVisibility(View.VISIBLE);
-                }
+                setVisibilityPlayerNames(isChecked);
+                editor.putBoolean(getString(R.string.SPshowPlayerNames), isChecked);
+                editor.apply();
             }
         });
 
         cbEnableVibrations.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                doEnableVibrations = isChecked;
+                setEnabledVibrations(isChecked);
+                editor.putBoolean(getString(R.string.SPenableVibrations), isChecked);
+                editor.apply();
             }
         });
 
@@ -243,6 +242,11 @@ public class Game extends AppCompatActivity {
             }
         });
 
+
+//        doShowAcceptButton = cbAcceptMove.isChecked();
+//        doShowPlayerNames = cbShowNames.isChecked();
+//        doEnableVibrations = cbEnableVibrations.isChecked();
+
         if (gameMode == LOCAL)
         {
             iSurrender.setEnabled(false);
@@ -255,6 +259,39 @@ public class Game extends AppCompatActivity {
         }
     }
 
+    public void setVisibilityAcceptMove(boolean visible)
+    {
+        doShowAcceptButton = visible;
+        if (!visible)
+            acceptMove.setVisibility(View.INVISIBLE);
+        else
+            acceptMove.setVisibility(View.VISIBLE);
+    }
+
+    public void setVisibilityPlayerNames(boolean visible)
+    {
+        TextView tvPlayer1 = (TextView) findViewById(R.id.tvPlayer1);
+        TextView tvPlayer2 = (TextView) findViewById(R.id.tvPlayer2);
+
+        doShowPlayerNames = visible;
+
+        if (!visible)
+        {
+            tvPlayer1.setVisibility(View.INVISIBLE);
+            tvPlayer2.setVisibility(View.INVISIBLE);
+        }
+
+        else
+        {
+            tvPlayer1.setVisibility(View.VISIBLE);
+            tvPlayer2.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setEnabledVibrations(boolean enable)
+    {
+        doEnableVibrations = enable;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -264,7 +301,7 @@ public class Game extends AppCompatActivity {
 
         setContentView(activity_game);
 
-
+        sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preferences_soccer), Context.MODE_PRIVATE);
         TextView g1 = (TextView) findViewById(R.id.tvPlayer1);
         TextView g2 = (TextView) findViewById(R.id.tvPlayer2);
         tbHeader = (android.support.v7.widget.Toolbar) findViewById(R.id.tbGame);
@@ -296,13 +333,13 @@ public class Game extends AppCompatActivity {
                 lay.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//        DisplayMetrics displayMetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
-        countY = round(height / 13);
-        countX = round(width / 11);
+//        int height = displayMetrics.heightPixels;
+//        int width = displayMetrics.widthPixels;
+        countY = sharedPreferences.getInt(getString(R.string.SPcountY), 50);//round(height / 13);
+        countX = sharedPreferences.getInt(getString(R.string.SPcountX), 50);//round(width / 11);
 
         for (int i = 1; i < 144; i++) { //countX*countY
             final Field pol = new Field(this);
@@ -393,6 +430,7 @@ public class Game extends AppCompatActivity {
             imFirstPlayer = extras.getBoolean("amIFirst");
             if (gameMode == BLUETOOTH) {
                 mBluetoothConnectionService = gSocket.getBluetoothConnectionService();
+
                 mHandler = new Handler() {
                     @Override
                     public void handleMessage(Message msg) {
@@ -565,34 +603,6 @@ public class Game extends AppCompatActivity {
         return line.canCreateLine(src, dst);
     }
 
-    public void startCounting()
-    {
-//        ObjectAnimator colorFade = ObjectAnimator.ofObject(acceptMove, "backgroundColor", new ArgbEvaluator(), Color.argb(255,255,255,255), 0xff000000);
-//        colorFade.setDuration(10000);
-//        colorFade.start();
-
-//        final ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar);
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while(progressStatus < 100)
-//                {
-//                    progressStatus++;
-//                    handler.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            pb.setProgress(progressStatus);
-//                        }
-//                    });
-//                    try
-//                    {
-//                        Thread.sleep(100);
-//                    }catch (InterruptedException e) {e.printStackTrace();}
-//                }
-//            }
-//        }).start();
-    }
-
     public int countPossibleMoves()
     {
         int[][] dstShots = listFields.get(_destination.getId()).getShots();
@@ -647,7 +657,16 @@ public class Game extends AppCompatActivity {
                 return false;
 
             if ((gameMode == BLUETOOTH) && (isMyTurn()))
-                sendMessage(String.valueOf(_destination.getId()) + ":move");
+            {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendMessage(String.valueOf(_destination.getId()) + ":move");
+                    }
+                }, 500);
+
+            }
+
 
             int[][] srcShots = listFields.get(_source.getId()).getShots();
             int[][] dstShots = listFields.get(_destination.getId()).getShots();
@@ -939,7 +958,7 @@ public class Game extends AppCompatActivity {
         return false;
     }
 
-    public boolean drawLine(ImageView source, ImageView destination) // TODO wyswietlanie linii na innej rozdzialce,
+    public boolean drawLine(ImageView source, ImageView destination)
     {
         Line line = new Line(this);
 

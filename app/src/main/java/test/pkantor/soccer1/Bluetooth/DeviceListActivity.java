@@ -14,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
@@ -73,6 +74,8 @@ public class DeviceListActivity extends Activity {
 
     private static final UUID MY_UUID_INSECURE =
             UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+    private static final int REQUEST_ENABLE_BT = 3;
+
 
     BluetoothAdapter mBluetoothAdapter;
     BluetoothConnectionService mBluetoothConnectionService = null;
@@ -92,6 +95,9 @@ public class DeviceListActivity extends Activity {
     boolean secondPlayerReady = false;
     Button btnEnableDisable_Discoverable;
     GlobalSocket gSocket;
+    Set<BluetoothDevice> pairedDevices;
+    ArrayAdapter<String> pairedDevicesArrayAdapter;
+    SharedPreferences sharedPreferences;
 
     @Override
     public void onBackPressed()
@@ -109,7 +115,7 @@ public class DeviceListActivity extends Activity {
         if (!mBluetoothAdapter.isEnabled())
         {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, 3);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
         else if (mBluetoothConnectionService == null)
             setupConnectionService();
@@ -129,6 +135,22 @@ public class DeviceListActivity extends Activity {
                 mBluetoothConnectionService.start();
             }
         }
+
+        if ((mBluetoothAdapter != null) && (mBluetoothAdapter.isEnabled()))
+        {
+            pairedDevices = mBluetoothAdapter.getBondedDevices();
+            if (pairedDevices.size() > 0) {
+                pairedDevicesArrayAdapter.clear();
+                findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+                for (BluetoothDevice device : pairedDevices) {
+                    pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                }
+            }
+            if (mBluetoothConnectionService == null)
+                setupConnectionService();
+        }
+
+
     }
 
     @Override
@@ -136,11 +158,13 @@ public class DeviceListActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         // Setup the window
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+//        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_device_list);
 
         // Set result CANCELED in case the user backs out
-        setResult(Activity.RESULT_CANCELED);
+        //setResult(Activity.RESULT_CANCELED);
+        sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preferences_soccer), Context.MODE_PRIVATE);
+
 
         // Initialize the button to perform device discovery
         Button scanButton = (Button) findViewById(R.id.button_scan);
@@ -153,8 +177,7 @@ public class DeviceListActivity extends Activity {
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        ArrayAdapter<String> pairedDevicesArrayAdapter =
-                new ArrayAdapter<String>(this, R.layout.device_name);
+        pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
         mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
 
         // Find and set up the ListView for paired devices
@@ -179,7 +202,7 @@ public class DeviceListActivity extends Activity {
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Get a set of currently paired devices
-        Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+        pairedDevices = mBtAdapter.getBondedDevices();
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
@@ -371,6 +394,7 @@ public class DeviceListActivity extends Activity {
         TextView tvP1Name = (TextView) mView.findViewById(R.id.tvFirstPlayerName);
         TextView tvP2Name = (TextView) mView.findViewById(R.id.tvSecondPlayerName);
 
+
         tvP1Name.setText(R.string.EnterYourName);
         tvP2Name.setText(R.string.EnterYourName);
 
@@ -464,7 +488,7 @@ public class DeviceListActivity extends Activity {
         if (imFirstPlayer)
         {
             mView.findViewById(R.id.tvSecondPlayerName).setVisibility(View.GONE);
-            ((EditText) mView.findViewById(R.id.etFirstPlayerName)).setText(res.getString(R.string.EnterYourName));
+            ((EditText) mView.findViewById(R.id.etFirstPlayerName)).setText(sharedPreferences.getString(getString(R.string.SPplayerName), getString(R.string.DefaultPlayer1)));
             p2Name.setVisibility(View.GONE);
         }
         else
@@ -472,7 +496,7 @@ public class DeviceListActivity extends Activity {
             mView.findViewById(R.id.tvFirstPlayerName).setVisibility(View.GONE);
             p1Name.setVisibility(View.GONE);
             mView.findViewById(R.id.tvGoalPoints).setVisibility(View.GONE);
-            ((EditText) mView.findViewById(R.id.etSecondPlayerName)).setText(res.getString(R.string.EnterYourName));
+            ((EditText) mView.findViewById(R.id.etSecondPlayerName)).setText(sharedPreferences.getString(getString(R.string.SPplayerName), getString(R.string.DefaultPlayer2)));
             np.setVisibility(View.GONE);
         }
         dialog.show();
@@ -570,7 +594,9 @@ public class DeviceListActivity extends Activity {
                         Toast.makeText(getApplicationContext(), msg.getData().getString("toast"),
                                 Toast.LENGTH_SHORT).show();
                         if (!gSocket.getAmIConnected())
-                            if (mProgressDialog != null)
+                            if ((dialog != null) && (dialog.isShowing()))
+                                dialog.dismiss();
+                            if ((mProgressDialog != null) && (mProgressDialog.isShowing()))
                                 mProgressDialog.dismiss();
                     }
                     break;
@@ -595,5 +621,22 @@ public class DeviceListActivity extends Activity {
 
         if ((imReady) && (secondPlayerReady))
             startGame();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a chat session
+                    setupConnectionService();
+                } else {
+                    // User did not enable Bluetooth or an error occurred
+                    Log.d(TAG, "BT not enabled");
+                    Toast.makeText(getApplicationContext(), R.string.bt_not_enabled_leaving,
+                            Toast.LENGTH_SHORT).show();
+                    this.finish();
+                }
+        }
     }
 }
