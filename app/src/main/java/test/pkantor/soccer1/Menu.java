@@ -66,6 +66,15 @@ public class Menu extends AppCompatActivity {
 
         sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preferences_soccer), Context.MODE_PRIVATE);
         calculateScreenParams();
+
+        GlobalSocket globalSocket = (GlobalSocket) getApplicationContext();
+        if (globalSocket.getBluetoothConnectionService() != null)
+        {
+            globalSocket.getBluetoothConnectionService().stop();
+            globalSocket.setBluetoothConnectionService(null);
+            globalSocket.setBluetoothHandler(null);
+
+        }
     }
     public void clickPlay(View v) {
         Intent intent = new Intent(this, GameModes.class);

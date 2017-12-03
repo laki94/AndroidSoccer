@@ -19,6 +19,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.constraint.ConstraintLayout;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
@@ -177,8 +178,8 @@ public class DeviceListActivity extends Activity {
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
-        mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
+        pairedDevicesArrayAdapter = new ArrayAdapter<String>(DeviceListActivity.this, R.layout.device_name);
+        mNewDevicesArrayAdapter = new ArrayAdapter<String>(DeviceListActivity.this, R.layout.device_name);
 
         // Find and set up the ListView for paired devices
         ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
@@ -381,10 +382,10 @@ public class DeviceListActivity extends Activity {
         actionBar.setSubtitle(subTitle);
     }
 
-    public void showSetNames()
+    public void showSetNames(Context context)
     {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         View mView = getLayoutInflater().inflate(R.layout.activity_dialog_setnames, null);
         final EditText p1Name = (EditText) mView.findViewById(R.id.etFirstPlayerName);
@@ -408,7 +409,7 @@ public class DeviceListActivity extends Activity {
                         new InputFilter() {
                             public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
                             {
-                                if (src.toString().matches("[a-zA-Z]+"))
+                                if (src.toString().matches(getString(R.string.allowedWords)))
                                     return src;
                                 return "";
                             }
@@ -422,7 +423,7 @@ public class DeviceListActivity extends Activity {
                             public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
                             {
 
-                                if (src.toString().matches("[a-zA-Z]+"))
+                                if (src.toString().matches(getString(R.string.allowedWords)))
                                     return src;
                                 return "";
                             }
@@ -499,7 +500,9 @@ public class DeviceListActivity extends Activity {
             ((EditText) mView.findViewById(R.id.etSecondPlayerName)).setText(sharedPreferences.getString(getString(R.string.SPplayerName), getString(R.string.DefaultPlayer2)));
             np.setVisibility(View.GONE);
         }
+
         dialog.show();
+
     }
 
     public void startGame()
@@ -516,6 +519,7 @@ public class DeviceListActivity extends Activity {
 
         if (imFirstPlayer)
             intent.putExtra("amIFirst", imFirstPlayer);
+
         intent.putExtra("p1Name", player1Name);
         intent.putExtra("p2Name", player2Name);
         intent.putExtra("goalPoints", Integer.valueOf(goalPoints));
@@ -551,7 +555,7 @@ public class DeviceListActivity extends Activity {
                             setStatus(getString(R.string.title_connected_to, mConnectedDeviceName)); // TODO connected
                             mBTDevicesAdapter.clear();
                             if (mBluetoothConnectionService.mState == 3)
-                                showSetNames();
+                                showSetNames(DeviceListActivity.this);
                             else
                                 Toast.makeText(getApplicationContext(), "cos sie popsulo", Toast.LENGTH_LONG).show();
 
@@ -594,10 +598,16 @@ public class DeviceListActivity extends Activity {
                         Toast.makeText(getApplicationContext(), msg.getData().getString("toast"),
                                 Toast.LENGTH_SHORT).show();
                         if (!gSocket.getAmIConnected())
+                        {
                             if ((dialog != null) && (dialog.isShowing()))
                                 dialog.dismiss();
                             if ((mProgressDialog != null) && (mProgressDialog.isShowing()))
                                 mProgressDialog.dismiss();
+
+                            imFirstPlayer = false;
+                            imReady = false;
+
+                        }
                     }
                     break;
             }

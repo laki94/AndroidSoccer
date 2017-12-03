@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import test.pkantor.soccer1.Bluetooth.BluetoothConnectionService;
+import test.pkantor.soccer1.Bluetooth.DeviceListActivity;
 
 import static java.lang.Math.round;
 import static test.pkantor.soccer1.R.layout.activity_game;
@@ -362,7 +363,7 @@ public class Game extends AppCompatActivity {
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            Log.d("DOWN", "" + pol.getId());
+                            Log.d("DOWN", "wcisnieto: " + pol.getId());
                             if ((isMyTurn() || gameMode == LOCAL)) {
                                 _lastDestination = (ImageView) findViewById(pol.getId());
 
@@ -658,12 +659,15 @@ public class Game extends AppCompatActivity {
 
             if ((gameMode == BLUETOOTH) && (isMyTurn()))
             {
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendMessage(String.valueOf(_destination.getId()) + ":move");
-                    }
-                }, 500);
+                sendMessage(String.valueOf(_destination.getId()) + ":move");
+
+//                mHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                        sendMessage(String.valueOf(_destination.getId()) + ":move");
+//                    }
+//                }, 500);
 
             }
 

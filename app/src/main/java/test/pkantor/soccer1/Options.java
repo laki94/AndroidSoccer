@@ -65,7 +65,7 @@ public class Options extends AppCompatActivity {
                         new InputFilter() {
                             public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
                             {
-                                if (src.toString().matches("[a-zA-Z]+"))
+                                if (src.toString().matches(getString(R.string.allowedWords)))
                                     return src;
                                 return "";
                             }

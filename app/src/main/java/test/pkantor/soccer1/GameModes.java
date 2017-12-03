@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 
-import test.pkantor.soccer1.Bluetooth.BluetoothMainActivity;
 import test.pkantor.soccer1.Bluetooth.DeviceListActivity;
 
 public class GameModes extends AppCompatActivity{
@@ -64,7 +63,7 @@ public class GameModes extends AppCompatActivity{
                         new InputFilter() {
                             public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
                             {
-                                if (src.toString().matches("[a-zA-Z]+"))
+                                if (src.toString().matches(getString(R.string.allowedWords)))
                                     return src;
                                 return "";
                             }
@@ -78,7 +77,7 @@ public class GameModes extends AppCompatActivity{
                             public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
                             {
 
-                                if (src.toString().matches("[a-zA-Z]+"))
+                                if (src.toString().matches(getString(R.string.allowedWords)))
                                     return src;
                                 return "";
                             }

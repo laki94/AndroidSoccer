@@ -1,6 +1,6 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-<string name="app_name">Soccer1</string>
+    <string name="app_name">Soccer1</string>
 
     <!-- MultiLanguage -->
     <string name="firstPlayerName">Enter first player name</string>
@@ -70,6 +70,8 @@
     <string name="preferences_soccer"></string>
 
 
+    <string name="allowedWords">[a-zA-Z]+</string>
+
     <string name="SPdevWidth" translatable="false">devWidth</string>
     <string name="SPdevHeight" translatable="false">devHeight</string>
     <string name="SPcountX" translatable="false">countX</string>
@@ -78,5 +80,6 @@
     <string name="SPshowPlayerNames" translatable="false">showPlayerNames</string>
     <string name="SPenableVibrations" translatable="false">enableVibrations</string>
     <string name="SPplayerName" translatable="false">playerName</string>
+    <string name="title_activity_network">Network</string>
 
 </resources>

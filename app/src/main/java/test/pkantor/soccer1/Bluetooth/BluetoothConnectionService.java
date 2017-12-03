@@ -192,6 +192,7 @@ public class BluetoothConnectionService {
 
             BluetoothSocket socket = null;
 
+            if (mBluetoothAdapter.isEnabled())
             while (mState != STATE_CONNECTED)
             {
                 try
@@ -233,6 +234,7 @@ public class BluetoothConnectionService {
         public void cancel() {
             Log.d(TAG, "cancel: Canceling AcceptThread.");
             try {
+                if (mmServerSocket != null)
                 mmServerSocket.close();
             } catch (IOException e) {
                 Log.e(TAG, "cancel: Close of AcceptThread ServerSocket failed. " + e.getMessage() );
