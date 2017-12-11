@@ -1,24 +1,21 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">Soccer1</string>
+    <string name="app_name">Paper Soccer</string>
 
-    <!-- MultiLanguage -->
-    <string name="firstPlayerName">Enter first player name</string>
-    <string name="score" translatable="false">%1$s %2$d : %3$d %4$s</string>
-
-    <!-- Polish -->
-    <string name="bOnOff" translatable="false">On/Off</string>
-
-    <!--  BluetoothChat -->
+    <!--  Bluetooth -->
     <string name="send">Send</string>
     <string name="not_connected">You are not connected to a device</string>
     <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Return to menu.</string>
-    <string name="title_connecting">connecting...</string>
+    <string name="title_connecting">connecting&#8230;</string>
     <string name="title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="title_not_connected">not connected</string>
+    <string name="waiting_for_other_player">Waiting for other player</string>
+    <string name="please_wait">Please wait&#8230;</string>
+    <string name="connection_lost">Connection lost</string>
+    <string name="enable_discoverable">Enable discoverable</string>
 
-    <!--  DeviceListActivity -->
-    <string name="scanning">scanning for devices...</string>
+    <!-- BluetoothMainActivity -->
+    <string name="scanning">scanning for devices&#8230;</string>
     <string name="select_device">select a device to connect</string>
     <string name="none_paired">No devices have been paired</string>
     <string name="none_found">No devices found</string>
@@ -26,60 +23,57 @@
     <string name="title_other_devices">Other Available Devices</string>
     <string name="button_scan">Scan for devices</string>
 
-    <!-- Options Menu -->
-    <string name="secure_connect">Connect a device - Secure</string>
-    <string name="insecure_connect">Connect a device - Insecure</string>
-    <string name="discoverable">Make discoverable</string>
-    <string name="secondPlayerName">Enter second player name</string>
-    <string name="buttonSave">Save</string>
-    <string name="buttonPlayLocal">Play on this device</string>
-    <string name="buttonPlayBluetooth">Play via Bluetooth</string>
-    <string name="buttonPlayNet">Play via Internet</string>
-    <string name="buttonAcceptMove">Accept move</string>
-    <string name="whoMoves">"Now moves, "</string>
-    <string name="doYouWantToExit">Do you want to exit?</string>
-    <string name="bYes">Yes</string>
-    <string name="bNo">No</string>
-    <string name="bPlay">Play</string>
-    <string name="bOptions">Options</string>
-    <string name="bQuit">Exit</string>
-    <string name="cbShowAcceptMove">Accept move button</string>
-    <string name="cbShowPlayers">Player names</string>
-    <string name="tvGoalPoints">Goal points to win</string>
-    <string name="bDiscover">Scan</string>
-    <string name="bDiscoverable">Enable discoverable</string>
-    <string name="bStartConnection">Connect with</string>
-    <string name="WinnerIs">%1$s, won</string>
-    <string name="DefaultPlayer1">Player 1</string>
-    <string name="DefaultPlayer2">Player 2</string>
-    <string name="SelectNextFieldError">In order to move select field first</string>
-    <string name="TooLongPassError">Wrong move - too long</string>
-    <string name="InvalidDirectionError">Move in this direction is impossible</string>
-    <string name="MakeMoveFirstError">Make move first</string>
-    <string name="WhitespaceError">Do not use whitespaces</string>
-    <string name="NameOverMaxEms">Player name cannot be over %1$s characters long</string>
-    <string name="NotYourTurnError">It is not your turn</string>
-    <string name="EnterYourName">Enter your name</string>
-    <string name="PlayerMoves">Now moves, %1$s</string>
-    <string name="waiting_for_other_player">Waiting for other player</string>
-    <string name="please_wait">Please wait...</string>
-    <string name="connection_lost">Connection lost</string>
+    <!-- Game -->
+    <string name="save">Save</string>
+    <string name="accept_move">Accept move</string>
+    <string name="do_you_want_to_exit">Do you want to exit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="show_accept_move">Accept move button</string>
+    <string name="show_player_names">Player names</string>
     <string name="enable_vibrations">Vibrations</string>
     <string name="surrender">Surrender</string>
+    <string name="who_moves">Now moves, %1$s</string>
+    <string name="score" translatable="false">%1$s %2$d : %3$d %4$s</string>
 
+    <!-- Game Modes-->
+    <string name="play_on_this_device">Play on this device</string>
+    <string name="play_via_bluetooth">Play via Bluetooth</string>
+
+    <!-- Set names dialog-->
+    <string name="enter_fplayer_name">Enter first player name</string>
+    <string name="enter_splayer_name">Enter second player name</string>
+    <string name="goals_to_win">Goal points to win</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="allowed_words">[a-zA-Z]+</string>
+    <string name="default_fplayer">Player 1</string>
+    <string name="default_splayer">Player 2</string>
+
+    <!-- Menu -->
+    <string name="play">Play</string>
+    <string name="options">Options</string>
+    <string name="quit">Exit</string>
+
+    <!-- Game over-->
+    <string name="winner_is">%1$s, won</string>
+
+    <!-- Errors -->
+    <string name="select_next_field_error">In order to move select field first</string>
+    <string name="too_long_pass_error">Wrong move - too long</string>
+    <string name="invalid_direction_error">Move in this direction is impossible</string>
+    <string name="make_move_first_error">Make move first</string>
+    <string name="whitespace_error">Do not use whitespaces</string>
+    <string name="not_your_turn_error">It is not your turn</string>
+
+    <!-- SharedPreferences -->
     <string name="preferences_soccer"></string>
-
-
-    <string name="allowedWords">[a-zA-Z]+</string>
-
-    <string name="SPdevWidth" translatable="false">devWidth</string>
-    <string name="SPdevHeight" translatable="false">devHeight</string>
-    <string name="SPcountX" translatable="false">countX</string>
-    <string name="SPcountY" translatable="false">countY</string>
-    <string name="SPshowAcceptMove" translatable="false">showAcceptMove</string>
-    <string name="SPshowPlayerNames" translatable="false">showPlayerNames</string>
-    <string name="SPenableVibrations" translatable="false">enableVibrations</string>
-    <string name="SPplayerName" translatable="false">playerName</string>
-    <string name="title_activity_network">Network</string>
+    <string name="SP_dev_width" translatable="false">devWidth</string>
+    <string name="SP_dev_height" translatable="false">devHeight</string>
+    <string name="SP_count_x" translatable="false">countX</string>
+    <string name="SP_count_y" translatable="false">countY</string>
+    <string name="SP_show_accept_move" translatable="false">showAcceptMove</string>
+    <string name="SP_show_player_names" translatable="false">showPlayerNames</string>
+    <string name="SP_enable_vibrations" translatable="false">enableVibrations</string>
+    <string name="SP_player_name" translatable="false">playerName</string>
 
 </resources>

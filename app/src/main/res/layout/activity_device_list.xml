@@ -27,7 +27,8 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="8dp"
         android:onClick="btnEnableDisable_Discoverable"
-        android:text="@string/bDiscoverable" />
+        android:text="@string/enable_discoverable"
+        android:background="@drawable/buttonshape"/>
 
     <TextView
         android:id="@+id/title_paired_devices"
@@ -70,5 +71,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/button_scan"
+        android:background="@drawable/buttonshape"
         />
 </LinearLayout>

@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".GlobalSocket"
@@ -15,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Menu">
+        <activity android:name=".Menu"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,13 +25,14 @@
         <activity
             android:name=".Game"
             android:screenOrientation="portrait" />
-        <activity android:name=".Options" />
-        <activity android:name=".GameOver" />
-        <activity android:name=".GameModes" />
-        <activity android:name=".Bluetooth.BluetoothMainActivity" />
-        <activity android:name=".Bluetooth.DeviceListActivity" />
-        <activity android:name=".Network.Client" />
-        <activity android:name=".Network.Server"/>
+        <activity android:name=".Options"
+            android:screenOrientation="portrait" />
+        <activity android:name=".GameOver"
+            android:screenOrientation="portrait" />
+        <activity android:name=".GameModes"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Bluetooth.BluetoothMainActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

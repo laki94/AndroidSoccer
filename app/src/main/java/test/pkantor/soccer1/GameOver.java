@@ -39,7 +39,7 @@ public class GameOver extends AppCompatActivity {
         {
             case 0:
                 Resources resources = getResources();
-                tv.setText(resources.getString(R.string.WinnerIs, winner));
+                tv.setText(resources.getString(R.string.winner_is, winner));
                 break;
 //            case 1:
 //                tv.setText("Wygrywa " + winner);

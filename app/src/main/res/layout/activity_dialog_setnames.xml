@@ -13,7 +13,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
-        android:text="@string/firstPlayerName"
+        android:text="@string/enter_fplayer_name"
         android:textColor="@color/colorBlack"
         android:textSize="18sp" />
 
@@ -24,7 +24,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:gravity="center"
-        android:hint="@string/DefaultPlayer1"
+        android:hint="@string/default_fplayer"
         android:inputType="textNoSuggestions"/>
 
     <TextView
@@ -34,7 +34,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
-        android:text="@string/secondPlayerName"
+        android:text="@string/enter_splayer_name"
         android:textSize="18sp"
         android:textColor="@color/colorBlack" />
 
@@ -45,7 +45,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:gravity="center"
-        android:hint="@string/DefaultPlayer2"
+        android:hint="@string/default_splayer"
         android:inputType="textNoSuggestions" />
 
     <TextView
@@ -53,7 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/tvGoalPoints"
+        android:text="@string/goals_to_win"
         android:gravity="center_horizontal"
         android:layout_gravity="center_horizontal"
         android:textSize="18sp"
@@ -72,7 +72,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:onClick="clickSetNames"
-        android:text="@string/buttonSave"
-        android:textSize="24sp" />
+        android:text="@string/save"
+        android:textSize="24sp"
+        android:background="@drawable/buttonshape"/>
 
 </LinearLayout>

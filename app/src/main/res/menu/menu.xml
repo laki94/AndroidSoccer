@@ -1,13 +1,12 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-<!--TODO zmniejszyc navigation view albo drawer-->
     <item
         android:id="@+id/nav_AcceptMove"
-        android:title="@string/cbShowAcceptMove"
+        android:title="@string/show_accept_move"
         app:actionViewClass="android.widget.CheckBox"/>
     <item
         android:id="@+id/nav_ShowPlayers"
-        android:title="@string/cbShowPlayers"
+        android:title="@string/show_player_names"
         app:actionViewClass="android.widget.CheckBox"/>
 
     <item

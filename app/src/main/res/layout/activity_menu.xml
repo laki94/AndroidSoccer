@@ -25,15 +25,15 @@
 
     <Button
         android:id="@+id/bPlay"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="165dp"
-        android:layout_height="105dp"
+        android:layout_width="170dp"
+        android:layout_height="110dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="60dp"
+        android:background="@drawable/buttonshape"
         android:onClick="clickPlay"
-        android:text="@string/bPlay"
+        android:text="@string/play"
         app:layout_constraintEnd_toEndOf="@+id/ivBall"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintRight_toRightOf="parent"
@@ -43,35 +43,38 @@
 
     <Button
         android:id="@+id/bQuit"
-        android:layout_width="162dp"
-        android:layout_height="108dp"
+        android:layout_width="249dp"
+        android:layout_height="89dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:onClick="clickQuit"
-        android:text="@string/bQuit"
+        android:background="@drawable/buttonshape"
+        android:text="@string/quit"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivBall"
-        app:layout_constraintVertical_bias="0.188" />
+        app:layout_constraintVertical_bias="0.557" />
 
     <Button
         android:id="@+id/bOptions"
-        android:layout_width="165dp"
-        android:layout_height="105dp"
+        android:layout_width="170dp"
+        android:layout_height="110dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/bOptions"
         android:onClick="clickOptions"
+        android:background="@drawable/buttonshape"
+        android:text="@string/options"
         app:layout_constraintBottom_toTopOf="@+id/bQuit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bPlay"
-        app:layout_constraintVertical_bias="0.472" />
+        app:layout_constraintVertical_bias="0.357" />
 
 </android.support.constraint.ConstraintLayout>

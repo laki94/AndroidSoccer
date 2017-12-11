@@ -1,15 +1,12 @@
 package test.pkantor.soccer1;
 
 import android.app.AlertDialog;
-import android.app.VoiceInteractor;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -99,10 +96,10 @@ public class Menu extends AppCompatActivity {
         countY = round(displayMetrics.heightPixels / 13);
         countX = round(displayMetrics.widthPixels / 11);
 
-        editor.putInt(getString(R.string.SPdevHeight), displayMetrics.heightPixels);
-        editor.putInt(getString(R.string.SPdevWidth), displayMetrics.widthPixels);
-        editor.putInt(getString(R.string.SPcountX), countX);
-        editor.putInt(getString(R.string.SPcountY), countY);
+        editor.putInt(getString(R.string.SP_dev_height), displayMetrics.heightPixels);
+        editor.putInt(getString(R.string.SP_dev_width), displayMetrics.widthPixels);
+        editor.putInt(getString(R.string.SP_count_x), countX);
+        editor.putInt(getString(R.string.SP_count_y), countY);
         editor.apply();
     }
 }

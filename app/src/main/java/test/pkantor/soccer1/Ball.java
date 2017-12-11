@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 /**
  * Created by Pawel on 29.10.2017.
+ * https://commons.wikimedia.org/wiki/File:Soccer_ball.svg
  */
 
 public class Ball extends android.support.v7.widget.AppCompatImageView {
@@ -38,7 +39,7 @@ public class Ball extends android.support.v7.widget.AppCompatImageView {
         centerX = iv.getWidth() / 4;
         centerY = iv.getHeight() / 4;
 
-        this.setImageResource(R.drawable.sball);
+        this.setImageResource(R.drawable.ball);
         this.setAdjustViewBounds(true);
         this.bringToFront();
         this.setClickable(false);

@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 
-import test.pkantor.soccer1.Bluetooth.DeviceListActivity;
+import test.pkantor.soccer1.Bluetooth.BluetoothMainActivity;
 
 public class GameModes extends AppCompatActivity{
 
@@ -35,7 +35,7 @@ public class GameModes extends AppCompatActivity{
 
     public void clickPlayBluetooth(View v)
     {
-        Intent intent = new Intent(this, DeviceListActivity.class);
+        Intent intent = new Intent(this, BluetoothMainActivity.class);
         startActivity(intent);
     }
 
@@ -51,7 +51,7 @@ public class GameModes extends AppCompatActivity{
         final EditText p2Name = (EditText) mView.findViewById(R.id.etSecondPlayerName);
         Button saveNames = (Button) mView.findViewById(R.id.bSaveNames);
 
-        p1Name.setText(sharedPreferences.getString(getString(R.string.SPplayerName), getString(R.string.DefaultPlayer1)));
+        p1Name.setText(sharedPreferences.getString(getString(R.string.SP_player_name), getString(R.string.default_fplayer)));
 
         final NumberPicker np = (NumberPicker) mView.findViewById(R.id.np);
         np.setMinValue(1);
@@ -63,7 +63,7 @@ public class GameModes extends AppCompatActivity{
                         new InputFilter() {
                             public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
                             {
-                                if (src.toString().matches(getString(R.string.allowedWords)))
+                                if (src.toString().matches(getString(R.string.allowed_words)))
                                     return src;
                                 return "";
                             }
@@ -77,7 +77,7 @@ public class GameModes extends AppCompatActivity{
                             public CharSequence filter(CharSequence src, int start, int end, Spanned dst, int dstart, int dend)
                             {
 
-                                if (src.toString().matches(getString(R.string.allowedWords)))
+                                if (src.toString().matches(getString(R.string.allowed_words)))
                                     return src;
                                 return "";
                             }
@@ -94,12 +94,12 @@ public class GameModes extends AppCompatActivity{
                 if (p1Name.getText().length() != 0)
                     intent.putExtra("p1Name", p1Name.getText().toString());
                 else
-                    intent.putExtra("p1Name", res.getString(R.string.DefaultPlayer1));
+                    intent.putExtra("p1Name", res.getString(R.string.default_fplayer));
 
                 if (p2Name.getText().length() != 0)
                     intent.putExtra("p2Name", p2Name.getText().toString());
                 else
-                    intent.putExtra("p2Name", res.getString(R.string.DefaultPlayer2));
+                    intent.putExtra("p2Name", res.getString(R.string.default_splayer));
 
                 intent.putExtra("goalPoints", np.getValue());
                 startActivity(intent);
