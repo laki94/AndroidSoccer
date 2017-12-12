@@ -493,6 +493,7 @@ public class Game extends AppCompatActivity {
                     }
                 };
                 mBluetoothConnectionService.setHandler(mHandler);
+                gSocket.setBluetoothGameHandler(mHandler);
             }
         } else {
 //            if (player1.getName().equals(""))
@@ -945,6 +946,15 @@ public class Game extends AppCompatActivity {
     {
         Intent intent = new Intent(this, GameOver.class);
 
+        if ((player1.getPoints() == goalPointsToWin) || (player2.getPoints() == goalPointsToWin))
+        {
+            intent.putExtra("p1Name", player1.getName());
+            intent.putExtra("p2Name", player2.getName());
+            intent.putExtra("goalPoints", goalPointsToWin);
+            intent.putExtra("gameMode", gameMode);
+            if (gameMode == BLUETOOTH)
+                intent.putExtra("amIFirst", imFirstPlayer);
+        }
         if (player1.getPoints() == goalPointsToWin)
         {
             intent.putExtra("winner", player1.getName());

@@ -57,6 +57,7 @@
 
     <!-- Game over-->
     <string name="winner_is">%1$s, won</string>
+    <string name="rematch">Rematch</string>
 
     <!-- Errors -->
     <string name="select_next_field_error">In order to move select field first</string>

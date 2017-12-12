@@ -290,6 +290,7 @@ public class BluetoothMainActivity extends Activity {
     private void setupConnectionService()
     {
         mBluetoothConnectionService = new BluetoothConnectionService(getApplicationContext(), mHandler);
+        gSocket.setBluetoothHandler(mHandler);
 
         mOutStringBuffer = new StringBuffer("");
     }

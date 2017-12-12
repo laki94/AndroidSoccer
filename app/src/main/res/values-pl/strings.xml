@@ -53,4 +53,5 @@
     <string name="discoverable">Włącz wykrywalność</string>
     <string name="cannot_connect_to_device_error">Nie można połączyć się z tym urządzeniem</string>
     <string name="connecting">Łączenie z %1$s&#8230;</string>
+    <string name="rematch">Rewanż</string>
 </resources>

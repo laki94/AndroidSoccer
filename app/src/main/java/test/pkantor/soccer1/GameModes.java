@@ -112,8 +112,4 @@ public class GameModes extends AppCompatActivity{
         dialog.show();
     }
 
-    public void clickPlayNet(View v)
-    {
-
-    }
 }
