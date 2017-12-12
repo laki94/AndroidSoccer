@@ -12,6 +12,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -99,8 +100,16 @@ public class BluetoothMainActivity extends Activity {
     @Override
     public void onBackPressed()
     {
-        if (mBluetoothConnectionService != null)
-            mBluetoothConnectionService.stop();
+
+//        if (dialog.isShowing())
+//        {
+//            dialog.dismiss();
+//            mBluetoothConnectionService.stop();
+//            mBluetoothConnectionService = null;
+//            mBluetoothConnectionService = new BluetoothConnectionService(getApplicationContext(), mHandler);
+//        }
+//        if (mBluetoothConnectionService != null)
+//            mBluetoothConnectionService.stop();
         System.exit(0);
     }
 
@@ -132,6 +141,8 @@ public class BluetoothMainActivity extends Activity {
                 mBluetoothConnectionService.start();
             }
         }
+        else
+            setupConnectionService();
 
         if ((mBluetoothAdapter != null) && (mBluetoothAdapter.isEnabled()))
         {
@@ -186,6 +197,10 @@ public class BluetoothMainActivity extends Activity {
         ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
+        // Turn on sub-title for new devices
+        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+
 
         // Register for broadcasts when a device is discovered
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -203,7 +218,6 @@ public class BluetoothMainActivity extends Activity {
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
-            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
             for (BluetoothDevice device : pairedDevices) {
                 pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
             }
@@ -290,9 +304,6 @@ public class BluetoothMainActivity extends Activity {
         setProgressBarIndeterminateVisibility(true);
         setTitle(R.string.scanning);
 
-        // Turn on sub-title for new devices
-        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
-
         // If we're already discovering, stop it
         if (mBtAdapter.isDiscovering()) {
             mBtAdapter.cancelDiscovery();
@@ -314,7 +325,7 @@ public class BluetoothMainActivity extends Activity {
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
             String address = info.substring(info.length() - 17);
-
+            Toast.makeText(getApplicationContext(), getString(R.string.connecting, info.substring(0, (info.length() - 18))), Toast.LENGTH_LONG).show();
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
@@ -495,6 +506,13 @@ public class BluetoothMainActivity extends Activity {
         builder.setView(mView);
         dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                mBluetoothConnectionService.stop();
+                mBluetoothConnectionService.start();
+            }
+        });
 
         dialog.show();
 
@@ -552,7 +570,7 @@ public class BluetoothMainActivity extends Activity {
                             if (mBluetoothConnectionService.mState == 3)
                                 showSetNames(BluetoothMainActivity.this);
                             else
-                                Toast.makeText(getApplicationContext(), "cos sie popsulo", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Zly stan " + mBluetoothConnectionService.mState, Toast.LENGTH_LONG).show();
 
                             break;
                         case BluetoothConnectionService.STATE_CONNECTING:
@@ -590,8 +608,13 @@ public class BluetoothMainActivity extends Activity {
                     break;
                 case 5:
                     if (null != getApplicationContext()) {
-                        Toast.makeText(getApplicationContext(), msg.getData().getString("toast"),
-                                Toast.LENGTH_SHORT).show();
+                        if (msg.getData().getInt("toast") == 0)
+                            Toast.makeText(getApplicationContext(), getString(R.string.cannot_connect_to_device_error),
+                                    Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getApplicationContext(), getString(R.string.connection_lost),
+                                    Toast.LENGTH_SHORT).show();
+
                         if (!gSocket.getAmIConnected())
                         {
                             if ((dialog != null) && (dialog.isShowing()))

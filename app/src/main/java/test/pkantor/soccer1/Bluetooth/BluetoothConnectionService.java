@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +19,7 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 
 import test.pkantor.soccer1.GlobalSocket;
+import test.pkantor.soccer1.R;
 
 /**
  * Created by User on 12/21/2016.
@@ -32,6 +34,11 @@ public class BluetoothConnectionService {
             UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
     private final BluetoothAdapter mBluetoothAdapter;
+
+    public static final int CONNECTION_FAILED = 0;
+
+    public static final int CONNECTION_LOST = 1;
+
     Context mContext;
     int mState;
     int mNewState;
@@ -474,7 +481,7 @@ public class BluetoothConnectionService {
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(5);
         Bundle bundle = new Bundle();
-        bundle.putString("toast", "Unable to connect device");
+        bundle.putInt("toast", CONNECTION_FAILED);
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -490,7 +497,7 @@ public class BluetoothConnectionService {
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(5);
         Bundle bundle = new Bundle();
-        bundle.putString("toast", "Device connection was lost");
+        bundle.putInt("toast", CONNECTION_LOST);
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 

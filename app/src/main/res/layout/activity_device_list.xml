@@ -44,9 +44,8 @@
     <ListView
         android:id="@+id/paired_devices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        />
+        android:layout_height="match_parent"
+        android:layout_weight="0.5" />
 
     <TextView
         android:id="@+id/title_new_devices"
@@ -62,15 +61,14 @@
     <ListView
         android:id="@+id/new_devices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
-        />
+        android:layout_height="match_parent"
+        android:layout_weight="0.5" />
 
     <Button
         android:id="@+id/button_scan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_scan"
+        android:layout_margin="8dp"
         android:background="@drawable/buttonshape"
-        />
+        android:text="@string/button_scan" />
 </LinearLayout>

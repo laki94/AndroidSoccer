@@ -22,6 +22,7 @@
     <string name="title_paired_devices">Paired Devices</string>
     <string name="title_other_devices">Other Available Devices</string>
     <string name="button_scan">Scan for devices</string>
+    <string name="connecting">Connecting to %1$s&#8230;</string>
 
     <!-- Game -->
     <string name="save">Save</string>
@@ -45,7 +46,7 @@
     <string name="enter_splayer_name">Enter second player name</string>
     <string name="goals_to_win">Goal points to win</string>
     <string name="enter_your_name">Enter your name</string>
-    <string name="allowed_words">[a-zA-Z]+</string>
+    <string name="allowed_words" translatable="false">[a-zA-Z]+</string>
     <string name="default_fplayer">Player 1</string>
     <string name="default_splayer">Player 2</string>
 
@@ -64,6 +65,7 @@
     <string name="make_move_first_error">Make move first</string>
     <string name="whitespace_error">Do not use whitespaces</string>
     <string name="not_your_turn_error">It is not your turn</string>
+    <string name="cannot_connect_to_device_error">Unable to connect to selected device</string>
 
     <!-- SharedPreferences -->
     <string name="preferences_soccer"></string>

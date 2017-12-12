@@ -68,11 +68,26 @@ public class Menu extends AppCompatActivity {
         if (globalSocket.getBluetoothConnectionService() != null)
         {
             globalSocket.getBluetoothConnectionService().stop();
-            globalSocket.setBluetoothConnectionService(null);
-            globalSocket.setBluetoothHandler(null);
+//            globalSocket.setBluetoothConnectionService(null);
+//            globalSocket.setBluetoothHandler(null);
 
         }
     }
+
+    public void onResume()
+    {
+        super.onResume();
+
+        GlobalSocket globalSocket = (GlobalSocket) getApplicationContext();
+        if (globalSocket.getBluetoothConnectionService() != null)
+        {
+            globalSocket.getBluetoothConnectionService().stop();
+//            globalSocket.setBluetoothConnectionService(null);
+//            globalSocket.setBluetoothHandler(null);
+
+        }
+    }
+
     public void clickPlay(View v) {
         Intent intent = new Intent(this, GameModes.class);
         startActivity(intent);

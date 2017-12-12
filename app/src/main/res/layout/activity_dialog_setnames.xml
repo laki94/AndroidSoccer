@@ -70,10 +70,11 @@
         android:id="@+id/bSaveNames"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:layout_weight="1"
+        android:background="@drawable/buttonshape"
         android:onClick="clickSetNames"
         android:text="@string/save"
-        android:textSize="24sp"
-        android:background="@drawable/buttonshape"/>
+        android:textSize="24sp" />
 
 </LinearLayout>

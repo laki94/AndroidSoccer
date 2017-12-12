@@ -372,7 +372,7 @@ public class Game extends AppCompatActivity {
                             } else if ((!isMyTurn()) && (gameMode == BLUETOOTH)) {
                                 if (toast != null)
                                     toast.cancel();
-                                toast = Toast.makeText(getApplicationContext(), res.getString(R.string.not_your_turn_error), Toast.LENGTH_LONG);
+                                toast = Toast.makeText(getApplicationContext(), getString(R.string.not_your_turn_error), Toast.LENGTH_LONG);
                                 toast.show();
                             }
 
@@ -481,7 +481,7 @@ public class Game extends AppCompatActivity {
                                     {
                                         if (toast != null)
                                             toast.cancel();
-                                        toast = Toast.makeText(getApplicationContext(), res.getString(R.string.connection_lost), Toast.LENGTH_LONG);
+                                        toast = Toast.makeText(getApplicationContext(), getString(R.string.connection_lost), Toast.LENGTH_LONG);
                                         toast.show();
 
                                         Intent intent = new Intent(Game.this, Menu.class);
@@ -496,9 +496,9 @@ public class Game extends AppCompatActivity {
             }
         } else {
 //            if (player1.getName().equals(""))
-            player1.setName(res.getString(R.string.default_fplayer));
+            player1.setName(getString(R.string.default_fplayer));
 //            if (player2.getName().equals(""))
-            player2.setName(res.getString(R.string.default_splayer));
+            player2.setName(getString(R.string.default_splayer));
 
             goalPointsToWin = 1;
         }
@@ -512,9 +512,9 @@ public class Game extends AppCompatActivity {
                 if (toast != null)
                     toast.cancel();
                 if (_lastDestination == _source)
-                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.select_next_field_error), Toast.LENGTH_LONG);
+                    toast = Toast.makeText(getApplicationContext(), getString(R.string.select_next_field_error), Toast.LENGTH_LONG);
                 else
-                    toast = Toast.makeText(getApplicationContext(), res.getString(R.string.too_long_pass_error), Toast.LENGTH_LONG);
+                    toast = Toast.makeText(getApplicationContext(), getString(R.string.too_long_pass_error), Toast.LENGTH_LONG);
                 toast.show();
                 _lastDestination = _destination;
             }
@@ -533,7 +533,7 @@ public class Game extends AppCompatActivity {
             } else {
                 if (toast != null)
                     toast.cancel();
-                toast = Toast.makeText(getApplicationContext(), res.getString(R.string.invalid_direction_error), Toast.LENGTH_LONG);
+                toast = Toast.makeText(getApplicationContext(), getString(R.string.invalid_direction_error), Toast.LENGTH_LONG);
                 toast.show();
             }
         }
@@ -567,7 +567,7 @@ public class Game extends AppCompatActivity {
 
     public void setToolbarScore()
     {
-        String textScore = res.getString(R.string.score, player1.getName(), player1.getPoints(), player2.getPoints(), player2.getName());
+        String textScore = getString(R.string.score, player1.getName(), player1.getPoints(), player2.getPoints(), player2.getName());
         tvScore.setTextSize(TypedValue.COMPLEX_UNIT_SP, ((countX / res.getDisplayMetrics().scaledDensity) / 2) - (textScore.length() / 10)) ;
         tvScore.setText(textScore);
     }
@@ -636,7 +636,7 @@ public class Game extends AppCompatActivity {
         {
             if (toast != null)
                 toast.cancel();
-            toast = Toast.makeText(this, res.getString(R.string.make_move_first_error), Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this, getString(R.string.make_move_first_error), Toast.LENGTH_SHORT);
 
             switch (gameMode)
             {
@@ -732,7 +732,7 @@ public class Game extends AppCompatActivity {
             if (doEnableVibrations)
                 if (((imFirstPlayer) && (gameMode == BLUETOOTH)) && (!player1.isAdditionalMove()))
                     vibrator.vibrate(150);
-            String nowMoves = res.getString(R.string.who_moves, player1.getName());
+            String nowMoves = getString(R.string.who_moves, player1.getName());
             tv.setText(nowMoves);
         }
         else {
@@ -740,7 +740,7 @@ public class Game extends AppCompatActivity {
                 if (((!imFirstPlayer) && (gameMode == BLUETOOTH)) && (!player2.isAdditionalMove()))
                     vibrator.vibrate(150);
 
-            String nowMoves = res.getString(R.string.who_moves, player2.getName());
+            String nowMoves = getString(R.string.who_moves, player2.getName());
             tv.setText(nowMoves);
         }
     }
