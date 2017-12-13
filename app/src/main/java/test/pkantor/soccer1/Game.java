@@ -196,6 +196,12 @@ public class Game extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 setVisibilityAcceptMove(isChecked);
+                if ((canDelete) && (!isChecked))
+                {
+                    deleteLastLine();
+                    pilka.setX(_source.getLeft() + _source.getWidth() / 4);
+                    pilka.setY(_source.getTop() + _source.getHeight() / 4);
+                }
                 editor.putBoolean(getString(R.string.SP_show_accept_move), isChecked);
                 editor.apply();
             }
