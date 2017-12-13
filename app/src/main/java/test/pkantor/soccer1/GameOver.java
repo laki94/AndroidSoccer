@@ -46,8 +46,11 @@ public class GameOver extends AppCompatActivity {
         extras = getIntent().getExtras();
         int result = 0;
         String winner = "";
+
         gSocket = (GlobalSocket) getApplicationContext();
-        gSocket.getBluetoothConnectionService().setHandler(mHandler);
+
+        if (gSocket.getBluetoothConnectionService() != null)
+            gSocket.getBluetoothConnectionService().setHandler(mHandler);
 
         if (extras != null)
 
