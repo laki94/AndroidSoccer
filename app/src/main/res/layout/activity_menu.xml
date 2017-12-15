@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/ivBall"
-        android:layout_width="298dp"
-        android:layout_height="334dp"
+        android:layout_width="350dp"
+        android:layout_height="351dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="24dp"
@@ -30,12 +30,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/buttonshape"
         android:onClick="clickPlay"
         android:text="@string/play"
         app:layout_constraintEnd_toEndOf="@+id/ivBall"
-        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="@+id/ivBall"
         app:layout_constraintTop_toTopOf="@+id/ivBall" />

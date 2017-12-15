@@ -8,7 +8,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import static java.lang.Math.round;
 
@@ -72,6 +80,24 @@ public class Menu extends AppCompatActivity {
 //            globalSocket.setBluetoothHandler(null);
 
         }
+
+        ImageView ivBall = (ImageView) findViewById(R.id.ivBall);
+        RotateAnimation rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+
+        rotateAnimation.setFillAfter(true);
+        rotateAnimation.setFillBefore(true);
+        rotateAnimation.setRepeatCount(Animation.INFINITE);
+        rotateAnimation.setRepeatMode(Animation.RESTART);
+
+        AnimationSet animationSet = new AnimationSet(true);
+        animationSet.addAnimation(rotateAnimation);
+
+        animationSet.setInterpolator(new LinearInterpolator());
+        animationSet.setDuration(10000);
+//        animationSet.setRepeatCount(Animation.INFINITE);
+
+        ivBall.startAnimation(animationSet);
+
     }
 
     public void onResume()
