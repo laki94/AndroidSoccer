@@ -59,10 +59,10 @@ public class Game extends AppCompatActivity {
     ImageView _source;
     ImageView _destination;
     ImageView _lastDestination;
-    ImageView pilka;
+    ImageView ball;
 
     List<ImageView> listViews;
-    List<ImageView> listLinie;
+    List<ImageView> listLines;
     List<Field> listFields;
 
     Player player1;
@@ -199,8 +199,8 @@ public class Game extends AppCompatActivity {
                 if ((canDelete) && (!isChecked))
                 {
                     deleteLastLine();
-                    pilka.setX(_source.getLeft() + _source.getWidth() / 4);
-                    pilka.setY(_source.getTop() + _source.getHeight() / 4);
+                    ball.setX(_source.getLeft() + _source.getWidth() / 4);
+                    ball.setY(_source.getTop() + _source.getHeight() / 4);
                 }
                 editor.putBoolean(getString(R.string.SP_show_accept_move), isChecked);
                 editor.apply();
@@ -307,8 +307,7 @@ public class Game extends AppCompatActivity {
         setContentView(activity_game);
 
         sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preferences_soccer), Context.MODE_PRIVATE);
-        TextView g1 = (TextView) findViewById(R.id.tvPlayer1);
-        TextView g2 = (TextView) findViewById(R.id.tvPlayer2);
+
         tbHeader = (android.support.v7.widget.Toolbar) findViewById(R.id.tbGame);
         tvScore = (TextView) tbHeader.findViewById(R.id.tv_tbTitle);
 
@@ -324,7 +323,7 @@ public class Game extends AppCompatActivity {
         player2 = new Player();
 
         listViews = new ArrayList<>();
-        listLinie = new ArrayList<>();
+        listLines = new ArrayList<>();
         listFields = new ArrayList<>();
         lay = (FrameLayout) findViewById(R.id.FLlay);
 
@@ -338,22 +337,17 @@ public class Game extends AppCompatActivity {
                 lay.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-//        DisplayMetrics displayMetrics = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
-//        int height = displayMetrics.heightPixels;
-//        int width = displayMetrics.widthPixels;
         countY = sharedPreferences.getInt(getString(R.string.SP_count_y), 50);//round(height / 13);
         countX = sharedPreferences.getInt(getString(R.string.SP_count_x), 50);//round(width / 11);
 
-        for (int i = 1; i < 144; i++) { //countX*countY
+        for (int i = 1; i < 144; i++) {
             final Field pol = new Field(this);
             pol.setId(i - 1);
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(countX, countX);
             params.leftMargin = left;
             params.topMargin = top;
 
-            //pol.setScaleType(ImageView.ScaleType.CENTER_CROP); // TODO moze sie przydac
             listFields.add(pol);
             lay.addView(pol, params);
             listViews.add(pol);
@@ -395,36 +389,39 @@ public class Game extends AppCompatActivity {
         }
         _source = listViews.get(71);
 
+        setPlayers();
 
-//        Bundle extras = getIntent().getExtras();
+        setToolbarScore();
+        setSupportActionBar(tbHeader);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
+    private void setPlayers()
+    {
+        TextView g1 = (TextView) findViewById(R.id.tvPlayer1);
+        TextView g2 = (TextView) findViewById(R.id.tvPlayer2);
 
-            g1.bringToFront();
-            g2.bringToFront();
-            g1.setWidth(countX * 4);
-            g2.setWidth(countX * 4);
+        g1.bringToFront();
+        g2.bringToFront();
+        g1.setWidth(countX * 4);
+        g2.setWidth(countX * 4);
 
-            g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
-            g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
+        g1.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
+        g2.setTextSize(TypedValue.COMPLEX_UNIT_SP, (countX / res.getDisplayMetrics().scaledDensity) / 2);
 
-            g1.setText(player1.getName());
-            g2.setText(player2.getName());
-            g1.setX((countX * 7) - countX / 3);
-            g1.setY((countX * 12) - countX / 3);
-            g2.setX((countX * 7) - countX / 3);
-            g2.setY((countX * 1) - countX / 3);
-
-            setToolbarScore();
-            setSupportActionBar(tbHeader);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        g1.setText(player1.getName());
+        g2.setText(player2.getName());
+        g1.setX((countX * 7) - countX / 3);
+        g1.setY((countX * 12) - countX / 3);
+        g2.setX((countX * 7) - countX / 3);
+        g2.setY((countX * 1) - countX / 3);
+    }
 
     public void setSettings()
     {
         Intent prevIntent = getIntent();
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, prevIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         Bundle extras = prevIntent.getExtras();
 
         if (extras != null) {
@@ -531,10 +528,10 @@ public class Game extends AppCompatActivity {
                 if (drawLine(_source, _destination)) {
                     canDelete = true;
                     playerAccepted = false;
-                    pilka.setX(_destination.getLeft() + _destination.getWidth() / 4);
-                    pilka.setY(_destination.getTop() + _destination.getHeight() / 4);
-                    pilka.bringToFront();
-                    pilka.invalidate();
+                    ball.setX(_destination.getLeft() + _destination.getWidth() / 4);
+                    ball.setY(_destination.getTop() + _destination.getHeight() / 4);
+                    ball.bringToFront();
+                    ball.invalidate();
                     return true;
                 }
             } else {
@@ -586,14 +583,14 @@ public class Game extends AppCompatActivity {
 
         blockMoveOutsideField();
 
-        while (listLinie.size() > 40)
+        while (listLines.size() > 40)
         {
-            listLinie.get(listLinie.size() - 1).setVisibility(View.INVISIBLE);
-            listLinie.remove(listLinie.size() - 1);
+            listLines.get(listLines.size() - 1).setVisibility(View.INVISIBLE);
+            listLines.remove(listLines.size() - 1);
         }
         _source = listViews.get(71);
-        pilka.setX(_source.getLeft() + _source.getWidth() / 4);
-        pilka.setY(_source.getTop() + _source.getHeight() / 4);
+        ball.setX(_source.getLeft() + _source.getWidth() / 4);
+        ball.setY(_source.getTop() + _source.getHeight() / 4);
 
         winner.setMove(false);
         loser.setMove(true);
@@ -625,12 +622,12 @@ public class Game extends AppCompatActivity {
     public void deleteLastLine()
     {
         if (canDelete)
-            if (listLinie.size() > 40)
+            if (listLines.size() > 40)
             {
                 if (!playerAccepted)
                 {
-                    listLinie.get(listLinie.size() - 1).setVisibility(View.GONE);
-                    listLinie.remove(listLinie.size() - 1);
+                    listLines.get(listLines.size() - 1).setVisibility(View.GONE);
+                    listLines.remove(listLines.size() - 1);
 
                     playerAccepted = true;
                 }
@@ -991,7 +988,7 @@ public class Game extends AppCompatActivity {
                 canDelete = false;
             }
 
-            listLinie.add(line);
+            listLines.add(line);
             lay.addView(line, line.getParams());
             lay.invalidate();
 
@@ -1013,8 +1010,8 @@ public class Game extends AppCompatActivity {
         params.leftMargin = listViews.get(MIDDLE).getLeft() + ball.getCenterX();
         params.topMargin = listViews.get(MIDDLE). getTop() + ball.getCenterY();
 
-        pilka = ball;
-        frameLayout.addView(pilka, params);
+        this.ball = ball;
+        frameLayout.addView(this.ball, params);
 
 
     }
