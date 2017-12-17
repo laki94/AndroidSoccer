@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="NameOverMaxEms">Nazwa gracza nie może przekraczać %1$d znaków</string>
+    <string msgid="4600421777120114993" name="abc_action_bar_home_description">"Przejdź do strony głównej"</string>
+    <string msgid="1397052879051804371" name="abc_action_bar_home_description_format">"%1$s, %2$s"</string>
+    <string msgid="6623331958280229229" name="abc_action_bar_home_subtitle_description_format">"%1$s, %2$s, %3$s"</string>
+    <string msgid="1594238315039666878" name="abc_action_bar_up_description">"Przejdź wyżej"</string>
+    <string msgid="3588849162933574182" name="abc_action_menu_overflow_description">"Więcej opcji"</string>
+    <string msgid="4076576682505996667" name="abc_action_mode_done">"Gotowe"</string>
+    <string msgid="7468859129482906941" name="abc_activity_chooser_view_see_all">"Zobacz wszystkie"</string>
+    <string msgid="2031811694353399454" name="abc_activitychooserview_choose_application">"Wybierz aplikację"</string>
+    <string msgid="121134116657445385" name="abc_capital_off">"WYŁ."</string>
+    <string msgid="3405795526292276155" name="abc_capital_on">"WŁ."</string>
+    <string msgid="7723749260725869598" name="abc_search_hint">"Szukaj…"</string>
+    <string msgid="3691816814315814921" name="abc_searchview_description_clear">"Wyczyść zapytanie"</string>
+    <string msgid="2550479030709304392" name="abc_searchview_description_query">"Wyszukiwane hasło"</string>
+    <string msgid="8264924765203268293" name="abc_searchview_description_search">"Szukaj"</string>
+    <string msgid="8928215447528550784" name="abc_searchview_description_submit">"Wyślij zapytanie"</string>
+    <string msgid="893419373245838918" name="abc_searchview_description_voice">"Wyszukiwanie głosowe"</string>
+    <string msgid="3421042268587513524" name="abc_shareactionprovider_share_with">"Udostępnij dla"</string>
+    <string msgid="7165123711973476752" name="abc_shareactionprovider_share_with_application">"Udostępnij dla %s"</string>
+    <string msgid="1603543279005712093" name="abc_toolbar_collapse_description">"Zwiń"</string>
+    <string name="accept_move">Akceptuj ruch</string>
+    <string name="app_name">Piłkarzyki</string>
+    <string name="bDiscover">Skanuj</string>
+    <string name="bStartConnection">Połącz</string>
+    <string name="bt_not_enabled_leaving">Bluetooth nie włączono. Powrót do menu.</string>
+    <string name="buttonPlayNet">Graj przez internet</string>
+    <string name="button_scan">Skanuj</string>
+    <string name="cannot_connect_to_device_error">Nie można połączyć się z tym urządzeniem</string>
+    <string name="connecting">Łączenie z %1$s…</string>
+    <string name="connection_lost">Utracono połączenie</string>
+    <string name="default_fplayer">Gracz 1</string>
+    <string name="default_splayer">Gracz 2</string>
+    <string name="discoverable">Włącz wykrywalność</string>
+    <string name="do_you_want_to_exit">Czy na pewno chcesz wyjść?</string>
+    <string name="enable_discoverable">Włącz wykrywalność</string>
+    <string name="enable_vibrations">Wibracje</string>
+    <string name="enter_fplayer_name">Podaj nazwę pierwszego gracza</string>
+    <string name="enter_splayer_name">Podaj nazwę drugiego gracza</string>
+    <string name="enter_your_name">Podaj swoją nazwę</string>
+    <string name="goals_to_win">Ilość bramek do zwycięstwa</string>
+    <string name="invalid_direction_error">Ruch w tym kierunku jest niedozwolony</string>
+    <string name="make_move_first_error">Najpierw należy wykonać ruch</string>
+    <string name="no">Nie</string>
+    <string name="none_found">Nie znaleziono urządzeń</string>
+    <string name="none_paired">Nie ma sparowanych urządzeń</string>
+    <string name="not_connected">Nie jesteś połączony z urządzeniem</string>
+    <string name="not_your_turn_error">To nie twoja tura</string>
+    <string name="options">Opcje</string>
+    <string name="play">Graj</string>
+    <string name="play_on_this_device">Graj na tym urządzeniu</string>
+    <string name="play_via_bluetooth">Graj przez bluetooth</string>
+    <string name="please_wait">Proszę czekać…</string>
+    <string name="quit">Wyjdź</string>
+    <string name="rematch">Rewanż</string>
+    <string name="save">Zapisz</string>
+    <string name="scanning">szukanie urządzeń…</string>
+    <string msgid="146198913615257606" name="search_menu_title">"Szukaj"</string>
+    <string name="select_device">wybierz urządzenie</string>
+    <string name="select_next_field_error">Wciśnij pole swojego następnego ruchu</string>
+    <string name="send">Wyślij</string>
+    <string name="show_accept_move">Przycisk akceptacji ruchu</string>
+    <string name="show_player_names">Nazwy graczy</string>
+    <string msgid="2869576371154716097" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="surrender">Poddaj się</string>
+    <string name="title_connected_to">połączono z <ns1:g id="device_name">%1$s</ns1:g></string>
+    <string name="title_connecting">łączenie…</string>
+    <string name="title_not_connected">nie połączono</string>
+    <string name="title_other_devices">Inne dostępne urządzenia</string>
+    <string name="title_paired_devices">Sparowane urządzenia</string>
+    <string name="too_long_pass_error">Zbyt długi ruch</string>
+    <string name="waiting_for_other_player">Oczekiwanie na drugiego gracza</string>
+    <string name="whitespace_error">Nie używaj białych znaków</string>
+    <string name="who_moves">Ruch gracza, %1$s</string>
+    <string name="winner_is">Wygrywa, %1$s</string>
+    <string name="yes">Tak</string>
+</resources>

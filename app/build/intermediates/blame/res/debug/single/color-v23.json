@@ -1,0 +1,46 @@
+[
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_tint_edittext.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_tint_edittext.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_tint_default.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_tint_default.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_btn_colored_text_material.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_btn_colored_text_material.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_tint_btn_checkable.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_tint_btn_checkable.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_color_highlight_material.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_color_highlight_material.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_tint_switch_track.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_tint_switch_track.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_btn_colored_borderless_text_material.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_btn_colored_borderless_text_material.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_tint_seek_thumb.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_tint_seek_thumb.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_tint_switch_thumb.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_tint_switch_thumb.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\design_tint_password_toggle.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\a46f32d67992146faedbd4965258b9ffe5b349a0\\output\\res\\color-v23\\design_tint_password_toggle.xml"
+    },
+    {
+        "merged": "D:\\AndroidS_Projekty\\test_1\\app\\build\\intermediates\\res\\merged\\debug\\color-v23\\abc_tint_spinner.xml",
+        "source": "C:\\Users\\pawel\\.android\\build-cache\\c5c39a4999934a682fdb59e3af4c20bcd58b880d\\output\\res\\color-v23\\abc_tint_spinner.xml"
+    }
+]
