@@ -1,0 +1,23 @@
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_AcceptMove"
+        android:title="@string/show_accept_move"
+        app:actionViewClass="android.widget.CheckBox"/>
+    <item
+        android:id="@+id/nav_ShowPlayers"
+        android:title="@string/show_player_names"
+        app:actionViewClass="android.widget.CheckBox"/>
+
+    <item
+        android:id="@+id/nav_EnableVibrations"
+        android:title="@string/enable_vibrations"
+        app:actionViewClass="android.widget.CheckBox"/>
+
+    <item
+        android:id="@+id/nav_Surrender"
+        android:title="@string/surrender"
+        app:actionViewClass="android.widget.Button"/>
+
+
+</menu>
